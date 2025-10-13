@@ -8,6 +8,12 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "python-frontmatter>=1.1.0,<2.0.0",
+    "pillow>=11.3.0,<12.0.0",
+    "babel>=2.17.0,<3.0.0",
+    "flask-minify>=0.50,<0.51",
+    "markdown>=3.8.2,<4.0.0",
+    "openai (>=1.101.0,<2.0.0)",
 ]
 
 [tool.poetry]
