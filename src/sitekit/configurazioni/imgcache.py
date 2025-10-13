@@ -2,10 +2,11 @@ import json
 from json import JSONDecodeError
 from pathlib import Path
 from hashlib import md5
-from sitekit.settings import BASE_DIR
+from sitekit.settings import settings
+
 
 def __verifica_file_json() -> Path:
-    cache_dir = BASE_DIR / ".cache"
+    cache_dir = settings.BASE_DIR / ".cache"
     cache_dir.mkdir(exist_ok=True)
     cache_file = cache_dir / "images.json"
     cache_file.touch(exist_ok=True)

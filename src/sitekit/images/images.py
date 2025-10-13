@@ -7,8 +7,6 @@ import logging
 import shutil
 
 from PIL import Image, ImageOps
-from sitekit.settings import (BASE_DIR, CONTENT_DIR, 
-                       BUILD_DIR, STATIC_DIR)
 from . import imgcache
 from .hash import _calcola_sha1
 

@@ -6,7 +6,7 @@ import yaml
 import json
 import pickle
 
-from sitekit.settings import CACHE_DIR
+from sitekit.settings import settings
 from .hash import _calcola_sha1
 from .normalize import _normalize_keys
 from . import ram
@@ -22,7 +22,7 @@ def load(input_file: Path) -> dict | None:
 
     dati = None
     checksum_origine = _calcola_sha1(input_file)
-    file_cache = CACHE_DIR / (checksum_origine + ".pickle")
+    file_cache = settings.CACHE_DIR / (checksum_origine + ".pickle")
     if file_cache.exists():
         # Restituisce il file scongelato
         dati = _scongela_file(file_cache)            
@@ -100,7 +100,7 @@ def clean():
 
     # Rimuove tutti i file con estensione
     # .pickle che non sono stati utilizzati
-    for file_cache in CACHE_DIR.glob("*.pickle"):
+    for file_cache in settings.CACHE_DIR.glob("*.pickle"):
         if file_cache.name not in _used_cache_files:
             try:
                 file_cache.unlink()
@@ -109,7 +109,7 @@ def clean():
     
     # Rimuove eventuali file con estensione
     # .tmp rimasti orfani
-    for tmp in CACHE_DIR.glob("*.tmp"):
+    for tmp in settings.CACHE_DIR.glob("*.tmp"):
         try:
             tmp.unlink()
         except Exception:
@@ -118,4 +118,4 @@ def clean():
 
 # Inizializzazione
 # Giusto per essere certi che CACHE_DIR esista
-CACHE_DIR.mkdir(parents=True, exist_ok=True)
+settings.CACHE_DIR.mkdir(parents=True, exist_ok=True)

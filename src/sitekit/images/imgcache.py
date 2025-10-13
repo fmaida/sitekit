@@ -3,7 +3,7 @@ from json import JSONDecodeError
 from pathlib import Path
 import atexit
 
-from sitekit.settings import BASE_DIR, CACHE_DIR
+from sitekit.settings import settings
 from .hash import _calcola_sha1
 
 
@@ -78,8 +78,8 @@ def _verifica_file_indice() -> Path:
         Path: Il percorso al file indice json
     """
     
-    CACHE_DIR.mkdir(exist_ok=True)
-    cache_file = CACHE_DIR / "imagesdb.json"
+    settings.CACHE_DIR.mkdir(exist_ok=True)
+    cache_file = settings.CACHE_DIR / "imagesdb.json"
     cache_file.touch(exist_ok=True)
     
     return cache_file

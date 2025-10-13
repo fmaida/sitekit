@@ -1,4 +1,4 @@
-from sitekit.settings import CONTENT_DIR
+from sitekit.settings import settings
 import yaml
 import markdown
 import re
@@ -11,7 +11,7 @@ def elenca(sito: str) -> list[str]:
     una descrizione del ristorante.
     """
     
-    cartella = CONTENT_DIR / sito / "descriptions"
+    cartella = settings.CONTENT_DIR / sito / "descriptions"
 
     if cartella.exists() and cartella.is_dir():
         return [f.stem for f in cartella.iterdir() if f.is_file() and f.suffix == ".md"]
@@ -24,7 +24,7 @@ def esiste(sito: str, lingua: str) -> bool:
     nella lingua specificata.
     """
 
-    cartella = CONTENT_DIR / sito / "descriptions"
+    cartella = settings.CONTENT_DIR / sito / "descriptions"
     
     file_descrizione = cartella / (lingua + ".md")
     return file_descrizione.exists() and file_descrizione.is_file()
@@ -38,7 +38,7 @@ def carica(sito, lingua) -> tuple[str | None, str]:
 
     descrizione = ""
 
-    file_descrizione = CONTENT_DIR / sito / "descriptions" / (lingua + ".md")
+    file_descrizione = settings.CONTENT_DIR / sito / "descriptions" / (lingua + ".md")
 
     if file_descrizione.exists():
         descrizione = cache.load(file_descrizione)["content_raw"].strip()
@@ -61,7 +61,7 @@ def carica_fallback(sito, lingua):
     descrizione = []
     
     # Percorso assoluto o relativo al file
-    cartella = CONTENT_DIR / sito / "descriptions.yaml"
+    cartella = settings.CONTENT_DIR / sito / "descriptions.yaml"
     
     # Se il file esiste lo carica
     if cartella.exists():
@@ -93,7 +93,7 @@ def salva(sito, lingua, testo):
     """
     Salva la descrizione del ristorante in un file
     """
-    cartella = CONTENT_DIR / sito / "descriptions"
+    cartella = settings.CONTENT_DIR / sito / "descriptions"
     cartella.mkdir(parents=True, exist_ok=True)
 
     file_descrizione = cartella / (lingua + ".md")    

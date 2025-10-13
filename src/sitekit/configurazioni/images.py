@@ -5,9 +5,7 @@ import hashlib
 import io
 import logging
 import shutil
-from sitekit.settings import (BASE_DIR, CONTENT_DIR,
-                              BUILD_DIR, STATIC_DIR,
-                              VERBOSE)
+from sitekit.settings import settings
 from .imgcache import cache_aggiungi
 
 
@@ -62,14 +60,14 @@ def image_copier(folder_name: Path, image_path: Path):
 
     # Ottiene la cartella di output delle 
     # immagini dentro la cartella build
-    build_images_dir = BUILD_DIR / "static" / "images" / folder_name
+    build_images_dir = settings.BUILD_DIR / "static" / "images" / folder_name
     
     # Crea la cartella e le precedenti se non esistono
     build_images_dir.mkdir(parents = True, exist_ok=True)
 
     # Ottiene la cartella di output delle
     # immagini dentro la cartella src/static
-    static_images_dir = STATIC_DIR / "images" / folder_name
+    static_images_dir = settings.STATIC_DIR / "images" / folder_name
     
     # Crea la directory se non esiste
     static_images_dir.mkdir(parents=True, exist_ok=True)

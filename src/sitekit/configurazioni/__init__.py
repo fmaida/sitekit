@@ -10,14 +10,7 @@ from sitekit import cache, jsonld
 from .themes import _carica_temi
 from sitekit.configurazioni import descrizioni
 from sitekit import images
-from sitekit.settings import (BASE_DIR,
-                              CACHE_DIR,
-                              CONTENT_DIR,
-                              STATIC_DIR,
-                              BASE_URL,
-                              SITE_LANGUAGES,
-                              SITE_LANGUAGE_CODES,
-                              VERBOSE)
+from sitekit.settings import settings
 
 # Questa variabile tiene in memoria
 # i parametri di configurazione 
@@ -33,7 +26,7 @@ def elenca():
     disponibili configurazioni.
     """
 
-    for sito in CONTENT_DIR.iterdir():
+    for sito in settings.CONTENT_DIR.iterdir():
         if sito.is_dir():
             if  (sito / "index.md").exists() or (sito / "_index.md").exists():
                 yield sito
@@ -80,7 +73,7 @@ def carica(sito: str, lingua: str) -> dict:
     global CACHE
 
     # Verifica che la lingua sia supportata
-    if lingua not in SITE_LANGUAGE_CODES:
+    if lingua not in settings.SITE_LANGUAGE_CODES:
         lingua = "en"
 
     # Prova a vedere se in memoria 
@@ -117,7 +110,7 @@ def carica(sito: str, lingua: str) -> dict:
     params["pagina"] = {}
     params["pagina"]["versioni_alternative"] = []
     
-    for selezione in SITE_LANGUAGES:
+    for selezione in settings.SITE_LANGUAGES:
         temp = f"<link rel=\"alternate\" hreflang=\"{selezione[0]}\" href=\"{BASE_URL}/{sito}/{selezione[0]}/\" />"
         params["pagina"]["versioni_alternative"].append(temp)
     temp = f"<link rel=\"alternate\" hreflang=\"x-default\" href=\"{BASE_URL}/{sito}/\" />"    
@@ -126,7 +119,7 @@ def carica(sito: str, lingua: str) -> dict:
     params["base_url"] = BASE_URL
     params["slug"] = sito
     params["lang"] = lingua
-    params["accepted_languages"] = SITE_LANGUAGES
+    params["accepted_languages"] = settings.SITE_LANGUAGES
     
     # Verifica se deve fare un redirect
     # Se fa un redirect, non è necessario
@@ -191,7 +184,7 @@ def _carica_scheda_ristorante(sito, lingua) -> dict | None:
     temp = {}
 
     # Percorso assoluto o relativo al file
-    cartella = CONTENT_DIR / sito    
+    cartella = settings.CONTENT_DIR / sito
     
     # Prova a caricare il file
     try:
@@ -211,7 +204,7 @@ def _carica_scheda_ristorante(sito, lingua) -> dict | None:
     # in cui si trova il file di configurazione
     temp["images"] = _carica_immagini(sito=sito,
                                       cartella_immagini=cartella,
-                                      cartella_destinazione=STATIC_DIR / "images" / sito)
+                                      cartella_destinazione=settings.STATIC_DIR / "images" / sito)
 
     # Abbiamo convertito tutte le immagini. Il
     # processo di conversione è stato lunghino,
@@ -296,7 +289,7 @@ def _carica_piatti(sito: str, lingua: str) -> dict:
 
     piatti = []
     # Percorso assoluto o relativo al file
-    cartella = CONTENT_DIR / sito / "menu.yaml"
+    cartella = settings.CONTENT_DIR / sito / "menu.yaml"
     
     if cartella.exists():
         data = cache.load(cartella)
@@ -339,7 +332,7 @@ def _carica_aperture(sito: str, lingua: str) -> list:
     aperture = []
     
     # Percorso assoluto o relativo al file
-    file_aperture = CONTENT_DIR / sito / "openings.yaml"
+    file_aperture = settings.CONTENT_DIR / sito / "openings.yaml"
     
     # Se il file esiste
     if file_aperture.exists():
@@ -368,7 +361,7 @@ def _carica_indicazioni(sito: str, lingua: str) -> dict:
     indicazioni = []
     
     # Percorso assoluto o relativo al file
-    file_indicazioni = CONTENT_DIR / sito / "directions.yaml"
+    file_indicazioni = settings.CONTENT_DIR / sito / "directions.yaml"
     
     if file_indicazioni.exists():
         data = cache.load(file_indicazioni)

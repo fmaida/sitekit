@@ -1,4 +1,3 @@
-from sitekit.settings import CONTENT_DIR, STATIC_DIR
 from pathlib import Path
 from . import images, imgcache
 from .classes import PictureClass

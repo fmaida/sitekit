@@ -1,7 +1,6 @@
 # v1.0 - 10/10/2025
 import json
 from urllib.parse import urljoin
-from sitekit.settings import BASE_URL
 from . import schema, menu
 
 out = {}
