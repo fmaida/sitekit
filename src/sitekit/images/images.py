@@ -1,0 +1,159 @@
+from typing import Tuple
+from pathlib import Path
+import os
+import hashlib
+import io
+import logging
+import shutil
+
+from PIL import Image, ImageOps
+from sitekit.settings import (BASE_DIR, CONTENT_DIR, 
+                       BUILD_DIR, STATIC_DIR)
+from . import imgcache
+from .hash import _calcola_sha1
+
+
+def copy_single(input_file: Path, output_folder_path: Path, longest_side: int = 1200, output_formats: list = None, aspect_ratio="unchanged") -> bool:
+    """
+    Esegue la conversione di un'immagine in vari
+    formati e in una sola dimensione indicata.
+    Questa funzione viene richiamata in batch
+    dalla funzione `copy` per creare le varianti
+    in tutte le dimensioni ed in tutti i formati
+    necessari.
+
+    Args:
+        input_file: Percorso all'immagine in input
+        output_folder_path: Percorso alla cartella di destinazione
+        longest_side: Dimensione massima del lato più grande dell'immagine
+        output_formats: Formati da convertire (.jpg, .avif, .webp)
+        aspect_ratio: Aspect ratio da mantenere nella conversione
+
+    Returns:
+        bool: True se la conversione ha avuto successo, False altrimenti
+    """
+
+    global ultima_immagine
+    global ultima_immagine_sha1
+
+    if output_formats is None:
+        output_formats = ["avif", "webp", "jpeg"]
+    
+    # Qui dovrei fare qualcosa per evitare di caricare 
+    # da disco il file origine se ci ho già
+    # lavorato in precedenza: ho bisogno di un
+    # sistema di caching per le immagini
+    is_added = imgcache.verifica_e_aggiungi(
+        input_file, longest_side, output_folder_path)
+    
+    if not is_added:
+        return False        
+
+    # Per evitare di caricare il file
+    # continuamente da disco, prova a tenere
+    # in RAM una copia dell'ultima immagine
+    # aperta    
+    if ultima_immagine:
+        hash_calcolato = _calcola_sha1(input_file)
+        if ultima_immagine_sha1 == hash_calcolato:
+            # È lo stesso identico file.
+            # Continua a usarlo
+            pass
+        else:
+            # Non si tratta dello stesso file
+            # Chiude il file precedente e apre
+            # il nuovo
+            ultima_immagine.close()
+            # Apre l'immagine con Pillow
+            ultima_immagine = Image.open(input_file)    
+            ultima_immagine_sha1 = hash_calcolato
+    else:
+        # Non c'è nulla, carica l'immagine
+        # Apre l'immagine con Pillow
+        ultima_immagine = Image.open(input_file)
+        
+    # Copia la variabile per valore, non per 
+    # riferimento. Questo è MOLTO importante,
+    # per evitare di modificare la variabile 
+    # in modo irreparabile, visto che poi
+    # mi servirà in altre occasioni
+    img = ultima_immagine.copy()
+
+    # Controlla l'orientamento EXIF
+    img = ImageOps.exif_transpose(img)        
+
+    # Apri l'immagine con Pillow
+    # Ottieni il nome del file senza estensione        
+        
+    # Crop (opzionale)
+    if aspect_ratio.lower() != "unchanged":
+        box = _crop_box(img.size, aspect_ratio)
+        if box != (0, 0, img.size[0], img.size[1]):
+            img = img.crop(box)
+
+    # Riscala l'immagine, se necessario
+    width, height = img.size
+    if max(width, height) > longest_side:
+        # L'immagine in almeno uno dei lati 
+        # è più lunga del consentito
+        if width >= height:
+            # Se è orizzontale la riscala
+            new_width = longest_side
+            new_height = int(height * (longest_side / width))
+        else:
+            # Se è verticale la riscala
+            new_height = longest_side
+            new_width = int(width * (longest_side / height))
+        # Riscala l'immagine in memoria
+        img = img.resize((new_width, new_height), Image.LANCZOS)
+
+    output_folder_path.mkdir(parents=True, exist_ok=True)
+    nome_file = input_file.stem + "__" + str(longest_side)
+    percorso_file = output_folder_path / nome_file
+    
+    # Salva le immagini sul disco        
+    for fmt in output_formats:
+        fmt_l = fmt.lower()
+        if fmt_l in ("jpeg", "jpg"):
+            im_save = img.convert("RGB") if img.mode != "RGB" else img
+            outp = (output_folder_path / nome_file).with_suffix(".jpg")
+            im_save.save(outp, "JPEG", quality=75, optimize=True, progressive=True)
+        elif fmt_l == "webp":
+            outp = (output_folder_path / nome_file).with_suffix(".webp")
+            img.save(outp, "WEBP", quality=82, method=6)
+        elif fmt_l == "avif":
+            outp = (output_folder_path / nome_file).with_suffix(".avif")
+            # richiede pillow-avif-plugin
+            img.save(outp, "AVIF", quality=50, speed=6)
+        else:
+            raise ValueError(f"Formato non supportato: {fmt}")
+    
+    return True
+
+def _crop_box(wh: Tuple[int, int], aspect: str) -> Tuple[int, int, int, int]:
+    if aspect == "unchanged":
+        return (0, 0, wh[0], wh[1])
+    w, h = wh
+    num, den = aspect.split(":")
+    ar = float(num) / float(den)
+    cur = w / h
+    if cur > ar:
+        new_w = int(h * ar)
+        left = (w - new_w) // 2
+        return (left, 0, left + new_w, h)
+    else:
+        new_h = int(w / ar)
+        top = (h - new_h) // 2
+        return (0, top, w, top + new_h)
+
+
+# Inizializzazione
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+cache_conversioni = {}
+
+# Cerca di ricordarsi l'ultima immagine
+# su cui ha lavorato
+ultima_immagine = None
+ultima_immagine_sha1 = None
