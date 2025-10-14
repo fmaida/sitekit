@@ -5,4 +5,5 @@ from .configurazioni.themes import _carica_temi
 from .configurazioni.imgcache import (cache_salva, 
                     cache_svuota, CACHE)
 from .configurazioni import descrizioni
+from .shortcuts import content, i18n
 from .settings import settings
