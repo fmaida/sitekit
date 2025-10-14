@@ -111,12 +111,12 @@ def carica(sito: str, lingua: str) -> dict:
     params["pagina"]["versioni_alternative"] = []
     
     for selezione in settings.SITE_LANGUAGES:
-        temp = f"<link rel=\"alternate\" hreflang=\"{selezione[0]}\" href=\"{BASE_URL}/{sito}/{selezione[0]}/\" />"
+        temp = f"<link rel=\"alternate\" hreflang=\"{selezione[0]}\" href=\"{settings.BASE_URL}/{sito}/{selezione[0]}/\" />"
         params["pagina"]["versioni_alternative"].append(temp)
-    temp = f"<link rel=\"alternate\" hreflang=\"x-default\" href=\"{BASE_URL}/{sito}/\" />"    
+    temp = f"<link rel=\"alternate\" hreflang=\"x-default\" href=\"{settings.BASE_URL}/{sito}/\" />"
     params["pagina"]["versioni_alternative"].append(temp)
     
-    params["base_url"] = BASE_URL
+    params["base_url"] = settings.BASE_URL
     params["slug"] = sito
     params["lang"] = lingua
     params["accepted_languages"] = settings.SITE_LANGUAGES
