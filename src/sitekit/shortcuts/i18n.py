@@ -4,5 +4,6 @@ from sitekit import cache
 from sitekit.settings import settings
 
 
-def load(input_file: Path) -> dict | None:
-    return cache.load(settings.I18N_DIR / input_file)
+def load(*path: str) -> dict | None:
+    percorso_completo = settings.I18N_DIR.joinpath(*path)
+    return cache.load(percorso_completo)
