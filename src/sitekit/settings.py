@@ -44,7 +44,7 @@ class SettingsClass:
         self.CACHE_DIR = self.BASE_DIR / ".cache"
         self.CONTENT_DIR = self.BASE_DIR / "content"
         self.BUILD_DIR = self.BASE_DIR / "build"
-        self.LOCALE_DIR = self.BASE_DIR / "locale"
+        self.I18N_DIR = self.BASE_DIR / "i18n"
         self.STATIC_DIR = self.BASE_DIR / "static"
         self.TEMPLATES_DIR = self.BASE_DIR / "templates"
         self.SITE_LANGUAGES = self.carica_lingue_disponibili()
