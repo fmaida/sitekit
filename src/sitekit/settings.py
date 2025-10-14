@@ -25,8 +25,8 @@ class SettingsClass:
         lingue = []
 
         # Carica le lingue dal file locale
-        if self.LOCALE_DIR.exists() and self.LOCALE_DIR.is_dir():
-            for file in self.LOCALE_DIR.iterdir():
+        if self.I18N_DIR.exists() and self.I18N_DIR.is_dir():
+            for file in self.I18N_DIR.iterdir():
                 if file.is_file() and file.suffix == ".json":
                     id_lingua = file.stem
                     nome_lingua = Locale.parse(id_lingua).get_display_name()
