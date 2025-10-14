@@ -1,6 +1,6 @@
 import frontmatter
 import markdown
-from sitekit.settings import LOCALE_DIR
+from sitekit.settings import settings
 
 
 def esiste(lingua: str) -> bool:
@@ -9,11 +9,11 @@ def esiste(lingua: str) -> bool:
     indicata esiste sul disco
     """
 
-    privacy_dir = LOCALE_DIR / "privacy"
+    privacy_dir = settings.I18N_DIR / "privacy"
     return (privacy_dir / (lingua + ".md")).exists()
 
 def carica(lingua: str, params: dict = {}) -> dict | None:
-    privacy_dir = LOCALE_DIR / "privacy"
+    privacy_dir = settings.I18N_DIR / "privacy"
 
     try:
         temp = frontmatter.load(privacy_dir / (lingua + ".md"), encoding="UTF-8")
@@ -37,7 +37,7 @@ def salva(lingua: str, testo: str) -> None:
     indicata sul disco
     """
     
-    privacy_dir = LOCALE_DIR / "privacy"
+    privacy_dir = settings.I18N_DIR / "privacy"
     
     with open(privacy_dir / (lingua + ".md"), "w", encoding="UTF-8") as f:
         f.write(testo)
