@@ -1,20 +1,32 @@
+# v1.1 – 29/09/2025
+
+from sitekit.settings import settings
 from pathlib import Path
 from . import images, imgcache
-from .classes import PictureClass
+from .picture_class import PictureClass
 
 
-def copy(source_image: Path, destination_folder: Path, aspect_ratio="unchanged") -> PictureClass:
+def copy(source_image: Path, destination_folder: Path, aspect_ratio: str = "unchanged", anchor: str = "middle") -> PictureClass:
     """
-    Copia un immagine salvandola in varie dimensioni
+    Copies an image file to a specified destination, creating multiple resized
+    versions of the image with predefined sizes. Ensures the source file exists
+    and the destination folder is created, if not already existent.
 
-    Args:
-        source_image: Percorso all'immagine originale
-        destination_folder: Percorso alla cartella destinazione
-        aspect_ratio: Aspect ratio da mantenere nella conversione
+    Parameters:
+        source_image (Path): The path of the image file to be copied.
+        destination_folder (Path): The path of the folder where the image
+            and its resized copies will be saved.
+        aspect_ratio (str): The aspect ratio to maintain for the resized images.
+            Default is "unchanged". Examples: "2:3", "4:3", "16:9", "9:16"
+        anchor (str): The vertical anchor position for cropping the image.
 
     Returns:
-        un istanza di PictureClass contenente tutte
-        le informazioni i dati per gestire l'immagine
+        PictureClass: An instance of PictureClass representing the folder
+            containing the copied images.
+
+    Raises:
+        FileNotFoundError: If the source image file does not exist or is not
+            a valid file.
     """
 
     # Controlla che quello in input sia un file
@@ -30,13 +42,17 @@ def copy(source_image: Path, destination_folder: Path, aspect_ratio="unchanged")
 
     try:
         s = images.copy_single(source_image, destination_folder, 
-                    longest_side=400, aspect_ratio="unchanged")
+                    longest_side=400, aspect_ratio=aspect_ratio, anchor=anchor)
+        s = images.copy_single(source_image, destination_folder,
+                    longest_side=800, aspect_ratio=aspect_ratio, anchor=anchor)
         s = images.copy_single(source_image, destination_folder, 
-                    longest_side=800, aspect_ratio="unchanged")
-        s = images.copy_single(source_image, destination_folder, 
-                    longest_side=1200, aspect_ratio="unchanged")
-        s = images.copy_single(source_image, destination_folder, 
-                    longest_side=1600, aspect_ratio="unchanged")        
+                    longest_side=1200, aspect_ratio=aspect_ratio, anchor=anchor)
+        # L'ultimo è volutamente convertito con aspect ratio
+        # non modificato rispetto all'originale: è il file che
+        # spesso verrà usato per mostrare l'anteprima a tutto
+        # schermo.
+        s = images.copy_single(source_image, destination_folder,
+                    longest_side=1600, aspect_ratio="unchanged", anchor=anchor)
     except Exception as e:
          print(f"Errore durante la copia: {e}")
 

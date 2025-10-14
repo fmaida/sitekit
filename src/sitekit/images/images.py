@@ -7,54 +7,71 @@ import logging
 import shutil
 
 from PIL import Image, ImageOps
-from . import imgcache
-from .hash import _calcola_sha1
+from sitekit.settings import settings
+from . import imgcache, hash
 
-
-def copy_single(input_file: Path, output_folder_path: Path, longest_side: int = 1200, output_formats: list = None, aspect_ratio="unchanged") -> bool:
+def copy_single(input_file: Path, output_folder_path: Path, longest_side: int = 1200, output_formats: list = None, aspect_ratio="unchanged", anchor: str = "middle") -> bool:
     """
-    Esegue la conversione di un'immagine in vari
-    formati e in una sola dimensione indicata.
-    Questa funzione viene richiamata in batch
-    dalla funzione `copy` per creare le varianti
-    in tutte le dimensioni ed in tutti i formati
-    necessari.
+    Copies and processes an image from the input path to the output folder, resizing and converting it to specified formats.
 
-    Args:
-        input_file: Percorso all'immagine in input
-        output_folder_path: Percorso alla cartella di destinazione
-        longest_side: Dimensione massima del lato più grande dell'immagine
-        output_formats: Formati da convertire (.jpg, .avif, .webp)
-        aspect_ratio: Aspect ratio da mantenere nella conversione
+    This function takes an input image and applies a series of transformations while ensuring efficient reuse of previously processed or cached image data.
+    The transformations include optional cropping to a specified aspect ratio, resizing the longest side, and exporting the image in multiple output formats.
+    The function supports formats including AVIF, WebP, and JPEG. Output images are stored in the specified output directory.
+
+    Arguments:
+        input_file (Path):
+            The path to the input image file.
+        output_folder_path (Path):
+            The directory where processed images
+            will be stored.
+        longest_side (int, optional):
+            Maximum allowed size for the longest
+            side of the image. Default is 1200 pixels.
+        output_formats (list, optional):
+            List of desired output formats. Supported
+            values are "avif", "webp", and "jpeg".
+            Defaults to ["avif", "webp", "jpeg"].
+        aspect_ratio (str, optional):
+            Specifies whether to crop the image to a
+            given aspect ratio. Defaults to "unchanged".
+        anchor (str, optional):
+            Vertical crop anchor when the image is taller than the target ratio.
+            One of "top", "middle", or "bottom". Defaults to "middle".
 
     Returns:
-        bool: True se la conversione ha avuto successo, False altrimenti
-    """
+        bool:
+            True if the operation is successful and
+            at least one image is saved, False otherwise.
 
+    Raises:
+        ValueError:
+            If an unsupported format is specified in the output_formats list,
+            or if `anchor` is not one of "top", "middle", "bottom".
+    """
     global ultima_immagine
     global ultima_immagine_sha1
 
     if output_formats is None:
         output_formats = ["avif", "webp", "jpeg"]
-    
-    # Qui dovrei fare qualcosa per evitare di caricare 
+
+    # Qui dovrei fare qualcosa per evitare di caricare
     # da disco il file origine se ci ho già
     # lavorato in precedenza: ho bisogno di un
     # sistema di caching per le immagini
     is_added = imgcache.verifica_e_aggiungi(
         input_file, longest_side, output_folder_path)
-    
+
     if not is_added:
-        return False        
+        return False
 
     # Per evitare di caricare il file
     # continuamente da disco, prova a tenere
     # in RAM una copia dell'ultima immagine
-    # aperta    
+    # aperta
     if ultima_immagine:
-        hash_calcolato = _calcola_sha1(input_file)
+        hash_calcolato = hash._calcola_sha1(input_file)
         if ultima_immagine_sha1 == hash_calcolato:
-            # È lo stesso identico file.
+            # è lo stesso identico file.
             # Continua a usarlo
             pass
         else:
@@ -63,36 +80,36 @@ def copy_single(input_file: Path, output_folder_path: Path, longest_side: int = 
             # il nuovo
             ultima_immagine.close()
             # Apre l'immagine con Pillow
-            ultima_immagine = Image.open(input_file)    
+            ultima_immagine = Image.open(input_file)
             ultima_immagine_sha1 = hash_calcolato
     else:
         # Non c'è nulla, carica l'immagine
         # Apre l'immagine con Pillow
         ultima_immagine = Image.open(input_file)
-        
-    # Copia la variabile per valore, non per 
+
+    # Copia la variabile per valore, non per
     # riferimento. Questo è MOLTO importante,
-    # per evitare di modificare la variabile 
+    # per evitare di modificare la variabile
     # in modo irreparabile, visto che poi
     # mi servirà in altre occasioni
     img = ultima_immagine.copy()
 
     # Controlla l'orientamento EXIF
-    img = ImageOps.exif_transpose(img)        
+    img = ImageOps.exif_transpose(img)
 
     # Apri l'immagine con Pillow
-    # Ottieni il nome del file senza estensione        
-        
+    # Ottieni il nome del file senza estensione
+
     # Crop (opzionale)
     if aspect_ratio.lower() != "unchanged":
-        box = _crop_box(img.size, aspect_ratio)
+        box = _crop_box(img.size, aspect_ratio, anchor)
         if box != (0, 0, img.size[0], img.size[1]):
             img = img.crop(box)
 
     # Riscala l'immagine, se necessario
     width, height = img.size
     if max(width, height) > longest_side:
-        # L'immagine in almeno uno dei lati 
+        # L'immagine in almeno uno dei lati
         # è più lunga del consentito
         if width >= height:
             # Se è orizzontale la riscala
@@ -108,8 +125,8 @@ def copy_single(input_file: Path, output_folder_path: Path, longest_side: int = 
     output_folder_path.mkdir(parents=True, exist_ok=True)
     nome_file = input_file.stem + "__" + str(longest_side)
     percorso_file = output_folder_path / nome_file
-    
-    # Salva le immagini sul disco        
+
+    # Salva le immagini sul disco
     for fmt in output_formats:
         fmt_l = fmt.lower()
         if fmt_l in ("jpeg", "jpg"):
@@ -125,23 +142,44 @@ def copy_single(input_file: Path, output_folder_path: Path, longest_side: int = 
             img.save(outp, "AVIF", quality=50, speed=6)
         else:
             raise ValueError(f"Formato non supportato: {fmt}")
-    
+
     return True
 
-def _crop_box(wh: Tuple[int, int], aspect: str) -> Tuple[int, int, int, int]:
+def _crop_box(wh: Tuple[int, int], aspect: str, anchor: str = "middle") -> Tuple[int, int, int, int]:
     if aspect == "unchanged":
         return (0, 0, wh[0], wh[1])
+
     w, h = wh
+
+    # Validate anchor (vertical only: top/middle/bottom)
+    anchor_l = anchor.lower()
+    if anchor_l not in ("top", "middle", "bottom"):
+        raise ValueError(f"Anchor non valido: {anchor}. Valori ammessi: 'top', 'middle', 'bottom'.")
+
+    # Parse aspect ratio "W:H"
     num, den = aspect.split(":")
     ar = float(num) / float(den)
+
     cur = w / h
+
     if cur > ar:
+        # Image is wider than target: crop left/right, keep vertical centered
         new_w = int(h * ar)
+        if new_w >= w:
+            return (0, 0, w, h)
         left = (w - new_w) // 2
         return (left, 0, left + new_w, h)
     else:
+        # Image is taller than target: crop top/middle/bottom
         new_h = int(w / ar)
-        top = (h - new_h) // 2
+        if new_h >= h:
+            return (0, 0, w, h)
+        if anchor_l == "top":
+            top = 0
+        elif anchor_l == "bottom":
+            top = h - new_h
+        else:  # middle (center)
+            top = (h - new_h) // 2
         return (0, top, w, top + new_h)
 
 

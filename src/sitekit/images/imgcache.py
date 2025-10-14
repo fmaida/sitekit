@@ -20,20 +20,11 @@ def svuota() -> None:
 
 def verifica_e_aggiungi(input_file: Path, longest_side: int, output_path_folder: Path) -> bool:
     """
-    Cerca uno specifico file all'interno della tabella degli hash
+    Cerca uno specifico file all'interno della tabella degli hash 
     che ha memorizzato nel file json in cache
     Ritorna True se il file è nuovo ed è stato aggiunto all'indice (bisogna rigenerare)
     oppure False se il file era già stato inserito nella cache
-
-    Args:
-        input_file: Percorso all'immagine in input
-        longest_side: Il lato più lungo dell'immagine
-        output_path_folder: Percorso alla cartella di destinazione
-
-    Returns:
-        bool:
     """
-
     global CACHE
     
     input_file = input_file.resolve()    
@@ -43,11 +34,21 @@ def verifica_e_aggiungi(input_file: Path, longest_side: int, output_path_folder:
         hash_calcolato = _calcola_sha1(input_file)
         percorso_file = str(output_path_folder)
         ricercato = (hash_calcolato, longest_side, percorso_file)
-        if ricercato in CACHE:
-            # Esiste già
+        
+        # Verifica se le immagini esistono realmente su disco
+        nome_file = input_file.stem + "__" + str(longest_side)
+        expected_files = [
+            output_path_folder / f"{nome_file}.jpg",
+            output_path_folder / f"{nome_file}.webp",
+            output_path_folder / f"{nome_file}.avif",
+        ]
+        files_exist = all(f.exists() for f in expected_files)
+        
+        if ricercato in CACHE and files_exist:
+            # Esiste già in cache E i file sono su disco
             return False
         else:
-            # Non esiste ancora
+            # Non esiste ancora O i file mancano
             CACHE.add(ricercato)
             return True        
 
@@ -73,9 +74,6 @@ def _verifica_file_indice() -> Path:
     Verifica che esista un file indice in formato
     .json all'interno della cartella di cache. Se
     non esiste, lo crea
-
-    Returns:
-        Path: Il percorso al file indice json
     """
     
     settings.CACHE_DIR.mkdir(exist_ok=True)
