@@ -15,7 +15,7 @@ class SettingsClass:
                 return parent
         raise RuntimeError("Non trovo la root del progetto (pyproject.toml mancante?)")
 
-    def carica_lingue_disponibili(self):
+    def _carica_lingue_disponibili(self):
         """
         Carica le lingue tradotte disponibili.
 
@@ -38,18 +38,22 @@ class SettingsClass:
 
         return lingue
 
+    def set_i18n_dir(self, path: Path):
+        self.I18N_DIR = path
+        self.SITE_LANGUAGES = self._carica_lingue_disponibili()
+        self.SITE_LANGUAGE_CODES = [codice for codice, _ in self.SITE_LANGUAGES]
+        self.SITE_LANGUAGE_NAMES = [nome for _, nome in self.SITE_LANGUAGES]
+
     def __init__(self):
         self.BASE_DIR = SettingsClass._get_base_dir()
-        self.BASE_URL = "https://venice.bio"
+        self.BASE_URL = "https://example.com"
         self.CACHE_DIR = self.BASE_DIR / ".cache"
         self.CONTENT_DIR = self.BASE_DIR / "content"
         self.BUILD_DIR = self.BASE_DIR / "build"
-        self.I18N_DIR = self.BASE_DIR / "i18n"
+        self.set_i18n_dir(self.BASE_DIR / "i18n")
         self.STATIC_DIR = self.BASE_DIR / "static"
         self.TEMPLATES_DIR = self.BASE_DIR / "templates"
-        self.SITE_LANGUAGES = self.carica_lingue_disponibili()
-        self.SITE_LANGUAGE_CODES = [codice for codice, _ in self.SITE_LANGUAGES]
-        self.SITE_LANGUAGE_NAMES = [nome for _, nome in self.SITE_LANGUAGES]
+        self.SITE_LANGUAGES = self._carica_lingue_disponibili()
         self.VERBOSE = False
 
 settings = SettingsClass()
