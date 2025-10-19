@@ -1,0 +1,89 @@
+- it: Carpaccio di pesce crudo
+  en: Raw fish carpaccio
+  fr: Carpaccio de poisson cru
+  de: Rohes Fisch-Carpaccio
+  es: Carpaccio de pescado crudo
+  pt: Carpaccio de peixe cru
+  nl: Rauwe vis carpaccio
+  ru: Карпаччо из сырой рыбы
+  ko: 생선 카르파초
+  ja: 生魚のカルパッチョ
+  zh: 生鱼片  
+  image: WSW_1673.jpg
+  type: fish
+  price: 28
+
+- it: Zuppa di pesce
+  en: Fish soup
+  fr: Soupe de poisson
+  de: Fischsuppe
+  es: Sopa de pescado
+  pt: Sopa de peixe
+  nl: Vissoep
+  ru: Рыбный суп
+  ko: 생선 수프
+  ja: 魚のスープ
+  zh: 鱼汤
+  image: WSW_1694.jpg
+  type: fish
+  price: 22
+
+- it: Risotto con scampi, tartufo e radicchio
+  en: Risotto with scampi, truffle and radicchio
+  fr: Risotto aux scampi, truffe et radicchio
+  de: Risotto mit Scampi, Trüffel und Radicchio
+  es: Risotto con scampi, trufa y radicchio
+  pt: Risoto com scampi, trufa e radicchio
+  nl: Risotto met scampi, truffel en radicchio
+  ru: Ризотто с креветками, трюфелем и радиккио
+  ko: 새우, 트러플, 라디키오 리
+  ja: スカンピ、トリュフ、ラディキオのリゾット
+  zh: 虾、松露和菊苣烩饭
+  image: WSW_1719.jpg
+  type: fish
+  price: 26
+
+- it: Tagliatelle con funghi porcini
+  en: Tagliatelle with porcini mushrooms
+  fr: Tagliatelles aux cèpes
+  de: Tagliatelle mit Steinpilzen
+  es: Tagliatelle con champiñones porcini
+  pt: Tagliatelle com cogumelos porcini
+  nl: Tagliatelle met porcini-paddenstoelen
+  ru: Тальятелле с белыми грибами
+  ko: 타글리아텔레와 송로버섯
+  ja: タリアテッレとポルチーニ茸
+  zh: 松露意大利宽面条
+  image: WSW_1808.jpg
+  type: veg
+  price: 20
+
+- it: Spaghetti ai frutti di mare
+  en: Spaghetti with seafood
+  fr: Spaghetti aux fruits de mer
+  de: Spaghetti mit Meeresfrüchten
+  es: Espaguetis con mariscos
+  pt: Espaguete com frutos do mar
+  nl: Spaghetti met zeevruchten
+  ru: Спагетти с морепродуктами
+  ko: 해산물 스파게티
+  ja: シーフードスパゲッティ
+  zh: 海鲜意大利面
+  image: WSW_1772.jpg
+  type: fish
+  price: 24
+
+- it: Filetto di bue ai ferri
+  en: Grilled beef fillet
+  fr: Filet de bœuf grillé
+  de: Gegrilltes Rinderfilet
+  es: Filete de res a la parrilla
+  pt: Filé de boi grelhado
+  nl: Gegrild rundvleesfilet
+  ru: Говяжий стейк на гриле
+  ko: 그릴에 구운 소고기 필레
+  ja: グリルした牛フィレ肉
+  zh: 烤牛肉菲力  
+  image: WSW_1851.jpg
+  type: meat
+  price: 30

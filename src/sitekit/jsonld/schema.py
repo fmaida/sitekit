@@ -13,7 +13,7 @@ def new(type_: str = "Restaurant"):
         },
         "telephone": "",
         "url": "",
-        "openingHours": [],
+        "openingHoursSpecification": [],
     }
 
     if type_ == "Restaurant":

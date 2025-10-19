@@ -1,0 +1,14 @@
+- partenza: Lido
+  direzione: Piazzale Roma
+  fermata: Rialto
+  linea: "1"
+
+- partenza: Piazzale Roma
+  direzione: Rialto
+  fermata: Rialto
+  linea: "2"
+
+- partenza: Fondamente Nove
+  direzione: Piazzale Roma
+  fermata: San Zaccaria
+  linea: "4.2"

@@ -5,7 +5,7 @@ from . import schema, menu
 
 out = {}
 
-def clear(type_: str = "Restaurant"):
+def clear(type_: str = "Restaurant") -> dict:
     global out
     out = schema.new(type_=type_)
 
@@ -24,15 +24,20 @@ def import_(data: dict):
     out["name"] = data["title"]
     out["address"]["streetAddress"] = data["address"]["street"]
     out["address"]["addressLocality"] = data["address"]["locality"] or "Venice"
+    if data["opening_hours"]:
+        pass
 
 def add_product(data: dict):
     global out
 
-    if out["type"] == "Restaurant":
+    if out.get("type") == "Restaurant":
         out["hasMenu"][""].append(menu.add_dish(data))
 
+def debug() -> dict:
+    global out
+    return out
 
-def generate():
+def generate() -> str:
     global out
 
     return f'''
