@@ -112,7 +112,7 @@ def get(limit: int = 6) -> list[dict]:
             if CONFIG.force_a_title and not temp["title"]:
                 temp["title"] = textwrap.shorten(memo["content"], width=30, placeholder="..")
             if CONFIG.wrap_titles_at > 0 and temp["title"]:
-                temp["title"] = textwrap.shorten(memo["content"], width=CONFIG.wrap_titles_at, placeholder="..")
+                temp["title"] = textwrap.shorten(temp["title"], width=CONFIG.wrap_titles_at, placeholder="..")
             temp["content"] = memo["content"]
             temp["attachments"] = allegati
             temp["image"] = image
@@ -145,5 +145,10 @@ def test(dati: list[dict]) -> None:
 
 
 if __name__ == "__main__":
+    token = Path.home() / ".config" / "cesco.it" / "memos.token"
+    set_token(token)
+    set_base_url("https://memos.cesco.it")
+    set_force_a_title(True)
+    set_wrap_titles_at(30)
     dati = get()
     test(dati)
