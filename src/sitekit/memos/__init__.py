@@ -25,7 +25,7 @@ class Config:
 
         
 # ––– Parametri globali –––
-CONFIG = Config(base_url="https://memos.cesco.it", token=Path(__file__).parent / "token")
+#CONFIG = Config(base_url="https://example.com", token=Path(__file__).parent / "token")
 
 
 def _estrai_titolo(content) -> str|None:
