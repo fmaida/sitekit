@@ -25,8 +25,14 @@ class Config:
 
         
 # ––– Parametri globali –––
-#CONFIG = Config(base_url="https://example.com", token=Path(__file__).parent / "token")
+CONFIG = Config(base_url="", token=Path(__file__).parent / "token")
 
+
+def set_token(token: str|Path) -> None:
+    CONFIG.token = token
+
+def set_base_url(base_url: str) -> None:
+    CONFIG.base_url = base_url
 
 def _estrai_titolo(content) -> str|None:
     prima_riga = content.split("\n")[0].strip()
