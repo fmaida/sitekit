@@ -97,7 +97,8 @@ def get(limit: int = 6) -> list[dict]:
     """
         
     # da qui in poi tutte le chiamate includono automaticamente il token
-    response = CONFIG.session.get(f"{CONFIG.base_url}/api/v1/memos?pageSize={limit}")
+    response = CONFIG.session.get(f"{CONFIG.base_url}/api/v1/memos",
+                                  params = {"pageSize": limit, "filter": "visibility == 'PUBLIC'"})
     if response.status_code == 200:
         # print(json.dumps(response.json(), indent=2))
         dati = response.json()
@@ -145,10 +146,14 @@ def test(dati: list[dict]) -> None:
 
 
 if __name__ == "__main__":
-    token = Path.home() / ".config" / "cesco.it" / "memos.token"
+    #token = Path.home() / ".config" / "cesco.it" / "memos.token"
+    token = Path.home() / ".config" / "cesco.blog" / "memos.token"
     set_token(token)
-    set_base_url("https://memos.cesco.it")
+    #set_base_url("https://memos.cesco.it")
+    set_base_url("https://cesco.blog")
     set_force_a_title(True)
     set_wrap_titles_at(30)
     dati = get()
     test(dati)
+    print()
+    print(str(dati))
