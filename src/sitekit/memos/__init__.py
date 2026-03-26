@@ -10,6 +10,7 @@ import textwrap
 class Config:
     def __init__(self, base_url: str, token: str | Path):
         self.force_a_title = False
+        self.wrap_titles_at = -1
         self.base_url = base_url
         self.session = requests.Session()
         self.token = token  # chiama il setter
@@ -40,6 +41,10 @@ def set_base_url(base_url: str) -> None:
 
 def set_force_a_title(force_a_title: bool) -> None:
     CONFIG.force_a_title = force_a_title
+
+
+def set_wrap_titles_at(wrap_titles_at: int) -> None:
+    CONFIG.wrap_titles_at = wrap_titles_at
 
 
 def _estrai_titolo(content) -> str|None:
@@ -106,6 +111,8 @@ def get(limit: int = 6) -> list[dict]:
             temp["title"] = _estrai_titolo(memo["content"])
             if CONFIG.force_a_title and not temp["title"]:
                 temp["title"] = textwrap.shorten(memo["content"], width=30, placeholder="..")
+            if CONFIG.wrap_titles_at > 0 and temp["title"]:
+                temp["title"] = textwrap.shorten(memo["content"], width=CONFIG.wrap_titles_at, placeholder="..")
             temp["content"] = memo["content"]
             temp["attachments"] = allegati
             temp["image"] = image
