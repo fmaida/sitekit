@@ -105,7 +105,7 @@ def get(limit: int = 6) -> list[dict]:
             temp["update_time"] = _converti_data(memo["updateTime"])
             temp["title"] = _estrai_titolo(memo["content"])
             if CONFIG.force_a_title and not temp["title"]:
-                temp["title"] = textwrap.shorten(memo["content"], width=24, placeholder="..")
+                temp["title"] = textwrap.shorten(memo["content"], width=30, placeholder="..")
             temp["content"] = memo["content"]
             temp["attachments"] = allegati
             temp["image"] = image
