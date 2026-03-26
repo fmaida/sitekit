@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import datetime
+import re
 import requests
 import textwrap
 
@@ -36,14 +37,21 @@ def set_token(token: str|Path) -> None:
 def set_base_url(base_url: str) -> None:
     CONFIG.base_url = base_url
 
+
 def set_force_a_title(force_a_title: bool) -> None:
     CONFIG.force_a_title = force_a_title
+
 
 def _estrai_titolo(content) -> str|None:
     prima_riga = content.split("\n")[0].strip()
     if prima_riga.startswith("#"):
         return prima_riga.lstrip("#").strip()
     return None
+
+
+def _estrai_tag(content: str) -> list[str]:
+    tags = re.findall(r'#([\w-]+)', content)
+    return tags
 
 
 def _converti_data(stringa) -> datetime.datetime:
@@ -101,6 +109,7 @@ def get(limit: int = 6) -> list[dict]:
             temp["content"] = memo["content"]
             temp["attachments"] = allegati
             temp["image"] = image
+            temp["tags"] = _estrai_tag(memo["content"])
             temp["url"] = f"{CONFIG.base_url}/{memo['name']}"
             output.append(temp)
 
