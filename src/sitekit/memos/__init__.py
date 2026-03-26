@@ -94,6 +94,7 @@ def get(limit: int = 6) -> list[dict]:
             temp["content"] = memo["content"]
             temp["attachments"] = allegati
             temp["image"] = image
+            temp["url"] = memo["name"]
             output.append(temp)
 
         # Riordina i memo in ordine cronologico inverso
