@@ -25,7 +25,7 @@ class Config:
 
         
 # ––– Parametri globali –––
-CONFIG = Config(base_url="", token=Path(__file__).parent / "token")
+CONFIG = Config(base_url="", token="")
 
 
 def set_token(token: str|Path) -> None:
