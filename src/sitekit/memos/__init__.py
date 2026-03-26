@@ -8,6 +8,7 @@ import textwrap
 
 class Config:
     def __init__(self, base_url: str, token: str | Path):
+        self.force_a_title = False
         self.base_url = base_url
         self.session = requests.Session()
         self.token = token  # chiama il setter
@@ -31,8 +32,12 @@ CONFIG = Config(base_url="", token="")
 def set_token(token: str|Path) -> None:
     CONFIG.token = token
 
+
 def set_base_url(base_url: str) -> None:
     CONFIG.base_url = base_url
+
+def set_force_a_title(force_a_title: bool) -> None:
+    CONFIG.force_a_title = force_a_title
 
 def _estrai_titolo(content) -> str|None:
     prima_riga = content.split("\n")[0].strip()
@@ -91,6 +96,8 @@ def get(limit: int = 6) -> list[dict]:
             temp["create_time"] = _converti_data(memo["createTime"])
             temp["update_time"] = _converti_data(memo["updateTime"])
             temp["title"] = _estrai_titolo(memo["content"])
+            if CONFIG.force_a_title and not temp["title"]:
+                temp["title"] = textwrap.shorten(memo["content"], width=24, placeholder="..")
             temp["content"] = memo["content"]
             temp["attachments"] = allegati
             temp["image"] = image
