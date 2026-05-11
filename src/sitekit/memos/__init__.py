@@ -39,11 +39,11 @@ def set_base_url(base_url: str) -> None:
     CONFIG.base_url = base_url
 
 
-def set_force_a_title(force_a_title: bool) -> None:
-    CONFIG.force_a_title = force_a_title
+def always_force_a_title(force_a_title: bool) -> None:
+    CONFIG.force_a_title = True
 
 
-def set_wrap_titles_at(wrap_titles_at: int) -> None:
+def wrap_titles_at(wrap_titles_at: int) -> None:
     CONFIG.wrap_titles_at = wrap_titles_at
 
 

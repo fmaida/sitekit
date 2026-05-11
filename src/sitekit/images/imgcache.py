@@ -18,39 +18,47 @@ def svuota() -> None:
     cache_file.unlink(missing_ok=True)    
     CACHE = set()
 
-def verifica_e_aggiungi(input_file: Path, longest_side: int, output_path_folder: Path) -> bool:
+def verifica_e_aggiungi(input_file: Path, longest_side: int, output_path_folder: Path,
+                        aspect_ratio: str = "unchanged", anchor: str = "middle") -> tuple[bool, str | None]:
     """
-    Cerca uno specifico file all'interno della tabella degli hash 
-    che ha memorizzato nel file json in cache
-    Ritorna True se il file è nuovo ed è stato aggiunto all'indice (bisogna rigenerare)
-    oppure False se il file era già stato inserito nella cache
+    Cerca uno specifico file all'interno della tabella degli hash
+    che ha memorizzato nel file json in cache.
+
+    Ritorna una tupla (da_elaborare, sha1):
+    - da_elaborare=True  → il file è nuovo o i file su disco mancano: bisogna rigenerare
+    - da_elaborare=False → il file era già in cache e i file su disco esistono: skip
+    - sha1               → hash SHA-1 del file sorgente (None se il file non esiste),
+                           restituito per evitare di ricalcolarlo nel chiamante
     """
     global CACHE
-    
-    input_file = input_file.resolve()    
-    if input_file.exists():
-        # Il file esiste su disco
-        # Calcola il suo SHA-1 e vede 
-        hash_calcolato = _calcola_sha1(input_file)
-        percorso_file = str(output_path_folder)
-        ricercato = (hash_calcolato, longest_side, percorso_file)
-        
-        # Verifica se le immagini esistono realmente su disco
-        nome_file = input_file.stem + "__" + str(longest_side)
-        expected_files = [
-            output_path_folder / f"{nome_file}.jpg",
-            output_path_folder / f"{nome_file}.webp",
-            output_path_folder / f"{nome_file}.avif",
-        ]
-        files_exist = all(f.exists() for f in expected_files)
-        
-        if ricercato in CACHE and files_exist:
-            # Esiste già in cache E i file sono su disco
-            return False
-        else:
-            # Non esiste ancora O i file mancano
-            CACHE.add(ricercato)
-            return True        
+
+    input_file = input_file.resolve()
+    if not input_file.exists():
+        return False, None
+
+    # Calcola lo SHA-1 una sola volta; verrà riusato dal chiamante
+    hash_calcolato = _calcola_sha1(input_file)
+    percorso_file = str(output_path_folder)
+    # aspect_ratio e anchor fanno parte della chiave: la stessa immagine
+    # con crop diversi produce file diversi e non deve collidere in cache
+    ricercato = (hash_calcolato, longest_side, percorso_file, aspect_ratio, anchor)
+
+    # Verifica se le immagini esistono realmente su disco
+    nome_file = input_file.stem + "__" + str(longest_side)
+    expected_files = [
+        output_path_folder / f"{nome_file}.jpg",
+        output_path_folder / f"{nome_file}.webp",
+        output_path_folder / f"{nome_file}.avif",
+    ]
+    files_exist = all(f.exists() for f in expected_files)
+
+    if ricercato in CACHE and files_exist:
+        # Esiste già in cache E i file sono su disco
+        return False, hash_calcolato
+    else:
+        # Non esiste ancora O i file mancano
+        CACHE.add(ricercato)
+        return True, hash_calcolato
 
 def salva() -> None:
     global CACHE

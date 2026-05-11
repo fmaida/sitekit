@@ -6,7 +6,7 @@ from . import images, imgcache
 from .picture_class import PictureClass
 
 
-def copy(source_image: Path, destination_folder: Path, aspect_ratio: str = "unchanged", anchor: str = "middle") -> PictureClass:
+def copy(source_image: Path, destination_folder: Path, aspect_ratio: str = "unchanged", anchor: str = "middle", alt: str = "") -> PictureClass:
     """
     Copies an image file to a specified destination, creating multiple resized
     versions of the image with predefined sizes. Ensures the source file exists
@@ -19,6 +19,8 @@ def copy(source_image: Path, destination_folder: Path, aspect_ratio: str = "unch
         aspect_ratio (str): The aspect ratio to maintain for the resized images.
             Default is "unchanged". Examples: "2:3", "4:3", "16:9", "9:16"
         anchor (str): The vertical anchor position for cropping the image.
+        alt (str): Testo alternativo per il tag <img>. Importante per
+            accessibilità e SEO. Default stringa vuota.
 
     Returns:
         PictureClass: An instance of PictureClass representing the folder
@@ -56,4 +58,4 @@ def copy(source_image: Path, destination_folder: Path, aspect_ratio: str = "unch
     except Exception as e:
          print(f"Errore durante la copia: {e}")
 
-    return PictureClass(folder=destination_folder)
+    return PictureClass(folder=destination_folder, alt=alt)

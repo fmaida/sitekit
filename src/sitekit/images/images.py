@@ -8,7 +8,7 @@ import shutil
 
 from PIL import Image, ImageOps
 from sitekit.settings import settings
-from . import imgcache, hash
+from . import imgcache
 
 def copy_single(input_file: Path, output_folder_path: Path, longest_side: int = 1200, output_formats: list = None, aspect_ratio="unchanged", anchor: str = "middle") -> bool:
     """
@@ -54,38 +54,30 @@ def copy_single(input_file: Path, output_folder_path: Path, longest_side: int = 
     if output_formats is None:
         output_formats = ["avif", "webp", "jpeg"]
 
-    # Qui dovrei fare qualcosa per evitare di caricare
-    # da disco il file origine se ci ho già
-    # lavorato in precedenza: ho bisogno di un
-    # sistema di caching per le immagini
-    is_added = imgcache.verifica_e_aggiungi(
-        input_file, longest_side, output_folder_path)
+    # verifica_e_aggiungi calcola lo SHA-1 e lo restituisce per evitare
+    # di ricalcolarlo qui sotto nella gestione della cache RAM
+    da_elaborare, hash_calcolato = imgcache.verifica_e_aggiungi(
+        input_file, longest_side, output_folder_path, aspect_ratio, anchor)
 
-    if not is_added:
+    if not da_elaborare:
         return False
 
-    # Per evitare di caricare il file
-    # continuamente da disco, prova a tenere
-    # in RAM una copia dell'ultima immagine
-    # aperta
+    # Per evitare di caricare il file continuamente da disco,
+    # tiene in RAM una copia dell'ultima immagine aperta.
+    # hash_calcolato proviene già da imgcache: nessun doppio calcolo.
     if ultima_immagine:
-        hash_calcolato = hash._calcola_sha1(input_file)
         if ultima_immagine_sha1 == hash_calcolato:
-            # è lo stesso identico file.
-            # Continua a usarlo
+            # È lo stesso file: riusa l'immagine già in memoria
             pass
         else:
-            # Non si tratta dello stesso file
-            # Chiude il file precedente e apre
-            # il nuovo
+            # File diverso: chiude il precedente e apre il nuovo
             ultima_immagine.close()
-            # Apre l'immagine con Pillow
             ultima_immagine = Image.open(input_file)
             ultima_immagine_sha1 = hash_calcolato
     else:
-        # Non c'è nulla, carica l'immagine
-        # Apre l'immagine con Pillow
+        # Prima immagine: carica e memorizza subito anche lo SHA-1
         ultima_immagine = Image.open(input_file)
+        ultima_immagine_sha1 = hash_calcolato
 
     # Copia la variabile per valore, non per
     # riferimento. Questo è MOLTO importante,
