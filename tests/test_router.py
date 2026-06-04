@@ -219,6 +219,26 @@ class TestDaUrlTemplate:
 
         assert template == "single.html"
 
+    def test_template_default_homepage_senza_template(
+        self, router: Router, base: Path
+    ) -> None:
+        """La homepage senza template usa home.html come default."""
+        crea_file(base, "index.md", contenuto=FRONTMATTER_SENZA_TEMPLATE)
+
+        _, template = router.da_url("/")
+
+        assert template == "home.html"
+
+    def test_template_homepage_con_template_esplicito(
+        self, router: Router, base: Path
+    ) -> None:
+        """La homepage con template esplicito usa quello, non home.html."""
+        crea_file(base, "index.md", contenuto=FRONTMATTER_CON_TEMPLATE)
+
+        _, template = router.da_url("/")
+
+        assert template == "about.html"
+
     def test_template_da_underscore_index(
         self, router: Router, base: Path
     ) -> None:

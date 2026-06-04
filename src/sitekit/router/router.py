@@ -36,25 +36,27 @@ class Router:
         self.alias = []        
 
 
-    def _leggi_template(self, percorso: Path) -> str:
+    def _leggi_template(self, percorso: Path, default: str = "single.html") -> str:
         """
         Legge il campo template dal frontmatter del file di contenuto.
 
         Se il campo non è presente (o il file non esiste) restituisce
-        "single.html". Se il valore trovato non termina con ".html",
-        l'estensione viene aggiunta automaticamente.
+        il valore di default. Se il valore trovato non termina con
+        ".html", l'estensione viene aggiunta automaticamente.
 
         Args:
             percorso (Path): Percorso del file .md da leggere.
+            default (str): Template da usare se il campo non è presente.
+                Default: "single.html".
 
         Returns:
             str: Il nome del template con estensione .html garantita.
         """
         if not percorso.exists():
-            return "single.html"
+            return default
 
         post = frontmatter.load(percorso)
-        template = post.get("template", "single.html")
+        template = post.get("template", default)
 
         if not template.endswith(".html"):
             template = template + ".html"
@@ -116,6 +118,7 @@ class Router:
                 alias corrispondente.
         """
         url_clean = url.strip("/")
+        default_template = "home.html" if not url_clean else "single.html"
 
         if not url_clean:
             segmenti_path = []
@@ -142,17 +145,17 @@ class Router:
             )
 
         if target.exists():
-            return target, self._leggi_template(target)
+            return target, self._leggi_template(target, default_template)
 
         alt_target = self.base.joinpath(*segmenti_path, alt_filename)
         if alt_target.exists():
-            return alt_target, self._leggi_template(alt_target)
+            return alt_target, self._leggi_template(alt_target, default_template)
 
         alias_map = {a["alias"]: a["destinazione"] for a in self.alias}
         destinazione = alias_map.get("/".join(segmenti_path))
         if destinazione is not None:
             percorso_alias = self.base / destinazione / filename
-            return percorso_alias, self._leggi_template(percorso_alias)
+            return percorso_alias, self._leggi_template(percorso_alias, default_template)
 
         raise FileNotFoundError(
             f"File non trovato e nessun alias corrispondente: {url!r}"
