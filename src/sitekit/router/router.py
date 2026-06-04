@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import frontmatter
+
 from sitekit.settings import settings
 
 
@@ -31,7 +33,33 @@ class Router:
             cartella_base = settings.CONTENT_DIR
         
         self.base = cartella_base.resolve()
-        self.alias = []
+        self.alias = []        
+
+
+    def _leggi_template(self, percorso: Path) -> str:
+        """
+        Legge il campo template dal frontmatter del file di contenuto.
+
+        Se il campo non è presente (o il file non esiste) restituisce
+        "single.html". Se il valore trovato non termina con ".html",
+        l'estensione viene aggiunta automaticamente.
+
+        Args:
+            percorso (Path): Percorso del file .md da leggere.
+
+        Returns:
+            str: Il nome del template con estensione .html garantita.
+        """
+        if not percorso.exists():
+            return "single.html"
+
+        post = frontmatter.load(percorso)
+        template = post.get("template", "single.html")
+
+        if not template.endswith(".html"):
+            template = template + ".html"
+
+        return template
 
 
     def aggiungi_alias(self, cartella_alias: str, cartella_destinazione: str):
@@ -57,20 +85,19 @@ class Router:
         self.alias.append(temp)
 
 
-    def da_url(self, url: str) -> Path:
+    def da_url(self, url: str) -> tuple[Path, str]:
         """
         Converte un URL relativo nel percorso del file di contenuto
-        corrispondente.
+        corrispondente e nel nome del template da usare per renderizzarlo.
 
         Il primo segmento di 2 caratteri viene trattato come codice
         lingua (es. "en"); tutti gli altri URL vengono trattati come
-        lingua di default (file index.md).
+        lingua di default.
 
-        Se il file calcolato esiste su disco viene restituito
-        direttamente. Se non esiste, viene cercato un alias nei
-        segmenti del path; in caso di corrispondenza si ritorna il
-        percorso della cartella di destinazione dell'alias. Se non
-        esiste né il file né un alias, viene sollevata FileNotFoundError.
+        L'ordine di ricerca del file è:
+        1. index.md / index.<lingua>.md
+        2. _index.md / _index.<lingua>.md
+        3. alias registrati via aggiungi_alias()
 
         Non è possibile risalire fuori dalla cartella base tramite
         sequenze come `..`.
@@ -79,7 +106,9 @@ class Router:
             url (str): URL relativo, es. "/chi-siamo" o "/en/about-us".
 
         Returns:
-            Path: Percorso assoluto del file di contenuto.
+            tuple[Path, str]: Percorso assoluto del file di contenuto
+                e nome del template letto dal campo "template" nel
+                frontmatter. La stringa è vuota se il campo non esiste.
 
         Raises:
             ValueError: Se l'URL tenta di uscire dalla cartella base.
@@ -89,18 +118,19 @@ class Router:
         url_clean = url.strip("/")
 
         if not url_clean:
-            return self.base / "index.md"
-
-        parti = url_clean.split("/")
-
-        if len(parti[0]) == 2:
-            lang = parti[0]
-            segmenti_path = parti[1:]
-            filename = f"index.{lang}.md"
-        else:
+            segmenti_path = []
             lang = None
-            segmenti_path = parti
-            filename = "index.md"
+        else:
+            parti = url_clean.split("/")
+            if len(parti[0]) == 2:
+                lang = parti[0]
+                segmenti_path = parti[1:]
+            else:
+                lang = None
+                segmenti_path = parti
+
+        filename = f"index.{lang}.md" if lang else "index.md"
+        alt_filename = f"_index.{lang}.md" if lang else "_index.md"
 
         target = self.base.joinpath(*segmenti_path, filename)
 
@@ -112,12 +142,17 @@ class Router:
             )
 
         if target.exists():
-            return target
+            return target, self._leggi_template(target)
+
+        alt_target = self.base.joinpath(*segmenti_path, alt_filename)
+        if alt_target.exists():
+            return alt_target, self._leggi_template(alt_target)
 
         alias_map = {a["alias"]: a["destinazione"] for a in self.alias}
         destinazione = alias_map.get("/".join(segmenti_path))
         if destinazione is not None:
-            return self.base / destinazione / filename
+            percorso_alias = self.base / destinazione / filename
+            return percorso_alias, self._leggi_template(percorso_alias)
 
         raise FileNotFoundError(
             f"File non trovato e nessun alias corrispondente: {url!r}"
@@ -129,17 +164,19 @@ class Router:
         Converte il percorso di un file di contenuto nell'URL
         corrispondente.
 
-        Supporta due convenzioni di nome file:
+        Supporta le varianti index e _index, con e senza suffisso lingua:
 
-        - index.md → lingua di default, URL senza prefisso lingua
-        - index.<lingua>.md → lingua prefissata, URL con /<lingua>/
+        - index.md / _index.md → lingua di default, URL senza prefisso
+        - index.<lingua>.md / _index.<lingua>.md → URL con /<lingua>/
 
         Esempi:
 
-            CONTENT_DIR/chi-siamo/index.md    → /chi-siamo/
-            CONTENT_DIR/chi-siamo/index.en.md → /en/chi-siamo/
-            CONTENT_DIR/index.md              → /
-            CONTENT_DIR/index.en.md           → /en/
+            CONTENT_DIR/chi-siamo/index.md     → /chi-siamo/
+            CONTENT_DIR/chi-siamo/_index.md    → /chi-siamo/
+            CONTENT_DIR/chi-siamo/index.en.md  → /en/chi-siamo/
+            CONTENT_DIR/chi-siamo/_index.en.md → /en/chi-siamo/
+            CONTENT_DIR/index.md               → /
+            CONTENT_DIR/index.en.md            → /en/
 
         Args:
             percorso (Path): Percorso del file di contenuto.
@@ -165,18 +202,19 @@ class Router:
         dir_relativa = relativo.parent
         dir_parts = [p for p in dir_relativa.parts if p != "."]
 
-        if nome == "index.md":
+        if nome in ("index.md", "_index.md"):
             segmenti = dir_parts
         else:
             parti_nome = nome.split(".")
             if (
                 len(parti_nome) != 3
-                or parti_nome[0] != "index"
+                or parti_nome[0] not in ("index", "_index")
                 or parti_nome[2] != "md"
             ):
                 raise ValueError(
-                    f"Il file non segue la convenzione index.md o "
-                    f"index.<lingua>.md: {nome!r}"
+                    f"Il file non segue la convenzione index.md, "
+                    f"_index.md, index.<lingua>.md o "
+                    f"_index.<lingua>.md: {nome!r}"
                 )
             lang = parti_nome[1]
             segmenti = [lang] + dir_parts
@@ -200,4 +238,5 @@ class Router:
         Args:
             app (object): Istanza dell'applicazione Flask.
         """
+
         app.jinja_env.globals["router"] = self

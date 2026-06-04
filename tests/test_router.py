@@ -6,6 +6,10 @@ import pytest
 from sitekit.router import Router
 from sitekit.settings import settings
 
+FRONTMATTER_CON_TEMPLATE = "---\ntitle: Pagina\ntemplate: about\n---\n# Pagina"
+FRONTMATTER_TEMPLATE_CON_ESTENSIONE = "---\ntitle: Pagina\ntemplate: about.html\n---\n# Pagina"
+FRONTMATTER_SENZA_TEMPLATE = "---\ntitle: Pagina\n---\n# Pagina"
+
 
 @pytest.fixture()
 def base(tmp_path: Path) -> Path:
@@ -19,11 +23,11 @@ def router(base: Path) -> Router:
     return Router(base)
 
 
-def crea_file(base: Path, *parti: str) -> Path:
+def crea_file(base: Path, *parti: str, contenuto: str = "") -> Path:
     """Crea il file (e le directory intermedie) e lo restituisce."""
     percorso = base.joinpath(*parti)
     percorso.parent.mkdir(parents=True, exist_ok=True)
-    percorso.touch()
+    percorso.write_text(contenuto, encoding="utf-8")
 
     return percorso
 
@@ -58,27 +62,30 @@ class TestDaUrlDefault:
     def test_url_semplice(self, router: Router, base: Path) -> None:
         crea_file(base, "chi-siamo", "index.md")
 
-        assert router.da_url("/chi-siamo") == (
-            base / "chi-siamo" / "index.md"
-        )
+        path, _ = router.da_url("/chi-siamo")
+
+        assert path == base / "chi-siamo" / "index.md"
 
     def test_url_annidato(self, router: Router, base: Path) -> None:
         crea_file(base, "cartella", "sottocartella", "index.md")
 
-        assert router.da_url("/cartella/sottocartella") == (
-            base / "cartella" / "sottocartella" / "index.md"
-        )
+        path, _ = router.da_url("/cartella/sottocartella")
+
+        assert path == base / "cartella" / "sottocartella" / "index.md"
 
     def test_url_homepage(self, router: Router, base: Path) -> None:
-        """URL radice → index.md senza verifica di esistenza."""
-        assert router.da_url("/") == base / "index.md"
+        crea_file(base, "index.md")
+
+        path, _ = router.da_url("/")
+
+        assert path == base / "index.md"
 
     def test_url_con_slash_finale(self, router: Router, base: Path) -> None:
         crea_file(base, "chi-siamo", "index.md")
 
-        assert router.da_url("/chi-siamo/") == (
-            base / "chi-siamo" / "index.md"
-        )
+        path, _ = router.da_url("/chi-siamo/")
+
+        assert path == base / "chi-siamo" / "index.md"
 
 
 # ---------------------------------------------------------------------------
@@ -91,33 +98,146 @@ class TestDaUrlLinguaPrefissata:
     def test_url_con_lingua(self, router: Router, base: Path) -> None:
         crea_file(base, "chi-siamo", "index.en.md")
 
-        assert router.da_url("/en/chi-siamo") == (
-            base / "chi-siamo" / "index.en.md"
-        )
+        path, _ = router.da_url("/en/chi-siamo")
+
+        assert path == base / "chi-siamo" / "index.en.md"
 
     def test_url_annidato_con_lingua(
         self, router: Router, base: Path
     ) -> None:
         crea_file(base, "cartella", "sottocartella", "index.en.md")
 
-        assert router.da_url("/en/cartella/sottocartella") == (
-            base / "cartella" / "sottocartella" / "index.en.md"
-        )
+        path, _ = router.da_url("/en/cartella/sottocartella")
+
+        assert path == base / "cartella" / "sottocartella" / "index.en.md"
 
     def test_url_homepage_con_lingua(
         self, router: Router, base: Path
     ) -> None:
-        """URL /en/ → index.en.md senza verifica di esistenza."""
-        assert router.da_url("/en/") == base / "index.en.md"
+        crea_file(base, "index.en.md")
+
+        path, _ = router.da_url("/en/")
+
+        assert path == base / "index.en.md"
 
     def test_segmento_tre_caratteri_trattato_come_path(
         self, router: Router, base: Path
     ) -> None:
         crea_file(base, "blog", "articolo", "index.md")
 
-        assert router.da_url("/blog/articolo") == (
-            base / "blog" / "articolo" / "index.md"
+        path, _ = router.da_url("/blog/articolo")
+
+        assert path == base / "blog" / "articolo" / "index.md"
+
+
+# ---------------------------------------------------------------------------
+# da_url — fallback _index
+# ---------------------------------------------------------------------------
+
+
+class TestDaUrlIndexFallback:
+
+    def test_fallback_underscore_index(
+        self, router: Router, base: Path
+    ) -> None:
+        """Se index.md non esiste, usa _index.md."""
+        crea_file(base, "chi-siamo", "_index.md")
+
+        path, _ = router.da_url("/chi-siamo")
+
+        assert path == base / "chi-siamo" / "_index.md"
+
+    def test_fallback_underscore_index_con_lingua(
+        self, router: Router, base: Path
+    ) -> None:
+        """Se index.en.md non esiste, usa _index.en.md."""
+        crea_file(base, "chi-siamo", "_index.en.md")
+
+        path, _ = router.da_url("/en/chi-siamo")
+
+        assert path == base / "chi-siamo" / "_index.en.md"
+
+    def test_index_ha_priorita_su_underscore_index(
+        self, router: Router, base: Path
+    ) -> None:
+        """index.md ha priorità su _index.md."""
+        crea_file(base, "chi-siamo", "index.md")
+        crea_file(base, "chi-siamo", "_index.md")
+
+        path, _ = router.da_url("/chi-siamo")
+
+        assert path == base / "chi-siamo" / "index.md"
+
+
+# ---------------------------------------------------------------------------
+# da_url — template
+# ---------------------------------------------------------------------------
+
+
+class TestDaUrlTemplate:
+
+    def test_template_letto_dal_frontmatter(
+        self, router: Router, base: Path
+    ) -> None:
+        """Il template viene letto dal campo 'template' nel frontmatter."""
+        crea_file(base, "chi-siamo", "index.md", contenuto=FRONTMATTER_CON_TEMPLATE)
+
+        _, template = router.da_url("/chi-siamo")
+
+        assert template == "about.html"
+
+    def test_template_letto_con_estensione_html_aggiunta(
+        self, router: Router, base: Path
+    ) -> None:
+        """Se il template non finisce con .html, viene aggiunto."""
+        crea_file(base, "chi-siamo", "index.md", contenuto=FRONTMATTER_CON_TEMPLATE)
+
+        _, template = router.da_url("/chi-siamo")
+
+        assert template == "about.html"
+
+    def test_template_con_estensione_html_gia_presente(
+        self, router: Router, base: Path
+    ) -> None:
+        """Se il template ha già .html, non viene duplicata."""
+        crea_file(
+            base, "chi-siamo", "index.md",
+            contenuto=FRONTMATTER_TEMPLATE_CON_ESTENSIONE,
         )
+
+        _, template = router.da_url("/chi-siamo")
+
+        assert template == "about.html"
+
+    def test_template_default_se_campo_assente(
+        self, router: Router, base: Path
+    ) -> None:
+        """Se il frontmatter non ha 'template', il default è single.html."""
+        crea_file(base, "chi-siamo", "index.md", contenuto=FRONTMATTER_SENZA_TEMPLATE)
+
+        _, template = router.da_url("/chi-siamo")
+
+        assert template == "single.html"
+
+    def test_template_da_underscore_index(
+        self, router: Router, base: Path
+    ) -> None:
+        """Il template viene letto anche da _index.md."""
+        crea_file(base, "chi-siamo", "_index.md", contenuto=FRONTMATTER_CON_TEMPLATE)
+
+        _, template = router.da_url("/chi-siamo")
+
+        assert template == "about"
+
+    def test_template_da_file_lingua(
+        self, router: Router, base: Path
+    ) -> None:
+        """Il template viene letto dal file localizzato index.en.md."""
+        crea_file(base, "chi-siamo", "index.en.md", contenuto=FRONTMATTER_CON_TEMPLATE)
+
+        _, template = router.da_url("/en/chi-siamo")
+
+        assert template == "about"
 
 
 # ---------------------------------------------------------------------------
@@ -134,9 +254,9 @@ class TestDaUrlAlias:
         crea_file(base, "chi-siamo", "index.en.md")
         router.aggiungi_alias("about-us", "chi-siamo")
 
-        assert router.da_url("/en/about-us") == (
-            base / "chi-siamo" / "index.en.md"
-        )
+        path, _ = router.da_url("/en/about-us")
+
+        assert path == base / "chi-siamo" / "index.en.md"
 
     def test_file_esistente_ha_priorita_sull_alias(
         self, router: Router, base: Path
@@ -146,9 +266,9 @@ class TestDaUrlAlias:
         crea_file(base, "chi-siamo", "index.en.md")
         router.aggiungi_alias("about-us", "chi-siamo")
 
-        assert router.da_url("/en/about-us") == (
-            base / "about-us" / "index.en.md"
-        )
+        path, _ = router.da_url("/en/about-us")
+
+        assert path == base / "about-us" / "index.en.md"
 
     def test_alias_su_lingua_default(
         self, router: Router, base: Path
@@ -157,9 +277,9 @@ class TestDaUrlAlias:
         crea_file(base, "chi-siamo", "index.md")
         router.aggiungi_alias("about-us", "chi-siamo")
 
-        assert router.da_url("/about-us") == (
-            base / "chi-siamo" / "index.md"
-        )
+        path, _ = router.da_url("/about-us")
+
+        assert path == base / "chi-siamo" / "index.md"
 
     def test_file_non_trovato_e_nessun_alias_solleva_errore(
         self, router: Router
@@ -203,6 +323,11 @@ class TestVersoUrlDefault:
 
         assert router.verso_url(percorso) == "/"
 
+    def test_underscore_index(self, router: Router, base: Path) -> None:
+        percorso = crea_file(base, "chi-siamo", "_index.md")
+
+        assert router.verso_url(percorso) == "/chi-siamo/"
+
 
 # ---------------------------------------------------------------------------
 # verso_url — lingua prefissata
@@ -220,6 +345,13 @@ class TestVersoUrlLinguaPrefissata:
         percorso = crea_file(base, "index.en.md")
 
         assert router.verso_url(percorso) == "/en/"
+
+    def test_underscore_index_con_lingua(
+        self, router: Router, base: Path
+    ) -> None:
+        percorso = crea_file(base, "chi-siamo", "_index.en.md")
+
+        assert router.verso_url(percorso) == "/en/chi-siamo/"
 
 
 # ---------------------------------------------------------------------------
