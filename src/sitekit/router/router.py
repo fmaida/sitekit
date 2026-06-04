@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from sitekit.settings import settings
+
 
 class Router:
     """
@@ -19,12 +21,15 @@ class Router:
         /en/              → CONTENT_DIR/index.en.md
     """
 
-    def __init__(self, cartella_base: Path) -> None:
+    def __init__(self, cartella_base: Path | None = None) -> None:
         """
         Args:
-            cartella_base (Path): Directory radice dei contenuti,
-                tipicamente settings.CONTENT_DIR.
+            cartella_base (Path | None): Directory radice dei contenuti.
+                Se non specificata, viene usato settings.CONTENT_DIR.
         """
+        if cartella_base is None:
+            cartella_base = settings.CONTENT_DIR
+        
         self.base = cartella_base.resolve()
         self.alias = []
 

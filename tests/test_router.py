@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from sitekit.router import Router
+from sitekit.settings import settings
 
 
 @pytest.fixture()
@@ -28,11 +29,31 @@ def crea_file(base: Path, *parti: str) -> Path:
 
 
 # ---------------------------------------------------------------------------
+# __init__ — cartella_base opzionale
+# ---------------------------------------------------------------------------
+
+
+class TestInit:
+
+    def test_default_usa_content_dir(self) -> None:
+        """Senza cartella_base il Router usa settings.CONTENT_DIR."""
+        router = Router()
+
+        assert router.base == settings.CONTENT_DIR.resolve()
+
+    def test_cartella_base_esplicita(self, base: Path) -> None:
+        """Con cartella_base esplicita viene usata quella."""
+        router = Router(base)
+
+        assert router.base == base.resolve()
+
+
+# ---------------------------------------------------------------------------
 # da_url — lingua di default
 # ---------------------------------------------------------------------------
 
 
-class TestRestituisciPercorsoDefault:
+class TestDaUrlDefault:
 
     def test_url_semplice(self, router: Router, base: Path) -> None:
         crea_file(base, "chi-siamo", "index.md")
@@ -65,7 +86,7 @@ class TestRestituisciPercorsoDefault:
 # ---------------------------------------------------------------------------
 
 
-class TestRestituisciPercorsoLinguaPrefissata:
+class TestDaUrlLinguaPrefissata:
 
     def test_url_con_lingua(self, router: Router, base: Path) -> None:
         crea_file(base, "chi-siamo", "index.en.md")
@@ -104,7 +125,7 @@ class TestRestituisciPercorsoLinguaPrefissata:
 # ---------------------------------------------------------------------------
 
 
-class TestRestituisciPercorsoAlias:
+class TestDaUrlAlias:
 
     def test_alias_risolve_a_cartella_destinazione(
         self, router: Router, base: Path
@@ -153,7 +174,7 @@ class TestRestituisciPercorsoAlias:
 # ---------------------------------------------------------------------------
 
 
-class TestRestituisciPercorsoSicurezza:
+class TestDaUrlSicurezza:
 
     def test_path_traversal_solleva_errore(self, router: Router) -> None:
         with pytest.raises(ValueError, match="cartella base"):
@@ -165,7 +186,7 @@ class TestRestituisciPercorsoSicurezza:
 # ---------------------------------------------------------------------------
 
 
-class TestRestituisciUrlDefault:
+class TestVersoUrlDefault:
 
     def test_percorso_semplice(self, router: Router, base: Path) -> None:
         percorso = crea_file(base, "chi-siamo", "index.md")
@@ -188,7 +209,7 @@ class TestRestituisciUrlDefault:
 # ---------------------------------------------------------------------------
 
 
-class TestRestituisciUrlLinguaPrefissata:
+class TestVersoUrlLinguaPrefissata:
 
     def test_percorso_con_lingua(self, router: Router, base: Path) -> None:
         percorso = crea_file(base, "chi-siamo", "index.en.md")
@@ -206,7 +227,7 @@ class TestRestituisciUrlLinguaPrefissata:
 # ---------------------------------------------------------------------------
 
 
-class TestRestituisciUrlErrori:
+class TestVersoUrlErrori:
 
     def test_nome_non_convenzionale_solleva_errore(
         self, router: Router, base: Path
