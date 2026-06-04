@@ -301,6 +301,17 @@ class TestDaUrlAlias:
 
         assert path == base / "chi-siamo" / "index.md"
 
+    def test_alias_con_underscore_index(
+        self, router: Router, base: Path
+    ) -> None:
+        """L'alias funziona anche quando la destinazione ha _index.md."""
+        crea_file(base, "servizi", "_index.md")
+        router.aggiungi_alias("services", "servizi")
+
+        path, _ = router.da_url("/services")
+
+        assert path == base / "servizi" / "_index.md"
+
     def test_file_non_trovato_e_nessun_alias_solleva_errore(
         self, router: Router
     ) -> None:

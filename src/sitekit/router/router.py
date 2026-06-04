@@ -155,6 +155,8 @@ class Router:
         destinazione = alias_map.get("/".join(segmenti_path))
         if destinazione is not None:
             percorso_alias = self.base / destinazione / filename
+            if not percorso_alias.exists():
+                percorso_alias = self.base / destinazione / alt_filename
             return percorso_alias, self._leggi_template(percorso_alias, default_template)
 
         raise FileNotFoundError(
