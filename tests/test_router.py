@@ -80,6 +80,13 @@ class TestDaUrlDefault:
 
         assert path == base / "index.md"
 
+    def test_url_homepage_stringa_vuota(self, router: Router, base: Path) -> None:
+        crea_file(base, "index.md")
+
+        path, _ = router.da_url("")
+
+        assert path == base / "index.md"
+
     def test_url_con_slash_finale(self, router: Router, base: Path) -> None:
         crea_file(base, "chi-siamo", "index.md")
 
@@ -247,7 +254,7 @@ class TestDaUrlTemplate:
 
         _, template = router.da_url("/chi-siamo")
 
-        assert template == "about"
+        assert template == "about.html"
 
     def test_template_da_file_lingua(
         self, router: Router, base: Path
@@ -257,7 +264,7 @@ class TestDaUrlTemplate:
 
         _, template = router.da_url("/en/chi-siamo")
 
-        assert template == "about"
+        assert template == "about.html"
 
 
 # ---------------------------------------------------------------------------
