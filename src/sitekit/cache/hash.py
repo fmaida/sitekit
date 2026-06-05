@@ -2,19 +2,39 @@ from hashlib import sha1
 from pathlib import Path
 
 
-# Calcola l'SHA-1 di un file
-# MD5 anche se vecchiotto e non sicuro, basta 
-# e avanza per calcolare più velocemente di 
-# SHA-1 e SHA-256 se un file è stato 
-# modificato oppure no
-def _calcola_sha1(percorso: Path) -> str | None:
+def _calcola_sha1(
+    percorso: Path,
+    plugin_paths: list[Path] | None = None,
+) -> str | None:
+    """
+    Calcola l'SHA-1 del contenuto di un file.
+
+    Se vengono passati percorsi di template plugin, aggiunge
+    al digest l'mtime_ns di ciascuno (ordinati per percorso),
+    così la chiave cambia automaticamente quando un template
+    viene modificato su disco.
+
+    Args:
+        percorso: Path del file sorgente da hashare.
+        plugin_paths: percorsi opzionali dei template plugin
+            usati dal file; contribuiscono al digest tramite
+            il loro mtime in nanosecondi.
+
+    Returns:
+        Stringa esadecimale SHA-1, oppure None se il file
+        non esiste.
+    """
+
     if not percorso.exists():
         return None
-    
-    h = sha1() #md5()
+
+    h = sha1()
     with open(percorso, "rb") as f:
         for chunk in iter(lambda: f.read(8192), b""):
             h.update(chunk)
-    
-    # Restituisce l'SHA-1
+
+    if plugin_paths:
+        for p in sorted(plugin_paths):
+            h.update(str(p.stat().st_mtime_ns).encode())
+
     return h.hexdigest()

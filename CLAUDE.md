@@ -28,6 +28,7 @@ esplicitamente è `BASE_URL`.
 | `I18N_DIR` | `BASE_DIR / i18n` | File JSON di traduzione |
 | `STATIC_DIR` | `BASE_DIR / static` | Asset statici |
 | `TEMPLATES_DIR` | `BASE_DIR / templates` | Template Jinja2 |
+| `PLUGINS_DIR` | `TEMPLATES_DIR / plugins` | Template Jinja2 dei plugin/shortcode |
 | `SITE_LANGUAGES` | auto da I18N_DIR | Lista di tuple `(codice, nome)` |
 
 ## Moduli
@@ -147,3 +148,7 @@ resettati esplicitamente nelle fixture `autouse` per evitare interferenze
 tra test.
 
 Il comando per lanciare i test è `pytest` dalla root del progetto.
+
+## Metadata
+- Ultima modifica: 2026-06-05
+- Modello: claude-sonnet-4-6

@@ -9,19 +9,63 @@ import pickle
 from sitekit.settings import settings
 from .hash import _calcola_sha1
 from .normalize import _normalize_keys
+from .plugins import _renderizza_plugin
 from . import ram
 
 
 # set globale con i file usati in questa run
 _used_cache_files: set[str] = set()
 
+def _estrai_plugin_paths(input_file: Path) -> list[Path]:
+    """
+    Legge il frontmatter di un file markdown e restituisce
+    i percorsi univoci dei template plugin dichiarati.
+
+    Args:
+        input_file: Path del file markdown da analizzare.
+
+    Returns:
+        Lista di Path ai template plugin, senza duplicati,
+        nell'ordine di prima comparsa nel frontmatter.
+
+    Raises:
+        FileNotFoundError: se un template plugin dichiarato
+            non esiste in PLUGINS_DIR.
+    """
+
+    data = frontmatter.load(input_file)
+    plugins_raw = data.metadata.get("plugins") or []
+
+    seen: set[Path] = set()
+    paths: list[Path] = []
+
+    for item in plugins_raw:
+        if not isinstance(item, dict):
+            continue
+        for plugin_name in item:
+            template_path = settings.PLUGINS_DIR / f"{plugin_name}.jinja2"
+            if not template_path.exists():
+                raise FileNotFoundError(
+                    f"Template plugin non trovato: \"{template_path}\""
+                )
+            if template_path not in seen:
+                seen.add(template_path)
+                paths.append(template_path)
+
+    return paths
+
+
 def load(input_file: Path) -> dict | None:
     input_file = Path(input_file)
     if not (input_file.exists() and input_file.is_file()):
         raise FileNotFoundError(f"File non trovato: \"{input_file}\"")
 
+    plugin_paths: list[Path] = []
+    if input_file.suffix.lower() in (".md", ".markdown"):
+        plugin_paths = _estrai_plugin_paths(input_file)
+
     dati = None
-    checksum_origine = _calcola_sha1(input_file)
+    checksum_origine = _calcola_sha1(input_file, plugin_paths or None)
     file_cache = settings.CACHE_DIR / (checksum_origine + ".pickle")
     if file_cache.exists():
         # Restituisce il file scongelato
@@ -79,16 +123,35 @@ def _carica_yaml(input_file: Path) -> dict:
 
 def _carica_frontmatter(input_file: Path) -> dict:
     """
-    Carica un file frontmatter
-    con YAML + Markdown
+    Carica un file frontmatter con YAML + Markdown.
+
+    Se nel frontmatter sono dichiarati plugin, sostituisce i
+    placeholder {{< nome >}} con l'HTML renderizzato prima di
+    convertire il markdown in HTML. Il campo "content_raw"
+    conserva sempre il markdown originale con i placeholder.
+
+    Args:
+        input_file: Path del file markdown da caricare.
+
+    Returns:
+        Dict con le chiavi del frontmatter più "content_raw"
+        (markdown originale) e "content" (HTML finale).
     """
-    
+
     data = frontmatter.load(input_file)
     temp = {}
     if data.metadata:
         temp |= _normalize_keys(data.metadata)
-    temp["content_raw"] = data.content or ""
-    temp["content"] = markdown.markdown(temp["content_raw"])
+
+    content_raw = data.content or ""
+    temp["content_raw"] = content_raw
+
+    plugins_raw = data.metadata.get("plugins") or []
+    if plugins_raw:
+        content_raw = _renderizza_plugin(content_raw, plugins_raw)
+
+    temp["content"] = markdown.markdown(content_raw)
+
     return temp
 
 def clean():
