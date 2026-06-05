@@ -71,14 +71,57 @@ Cache a due livelli per file di contenuto (JSON, YAML, Markdown+frontmatter).
 from sitekit import cache
 dati = cache.load(Path("content/pagina.md"))
 # dati è un dict con le chiavi del frontmatter +
-# "content_raw" (markdown grezzo) e "content" (HTML renderizzato)
+# "content_raw" (markdown grezzo, placeholder inclusi) e
+# "content" (HTML renderizzato con plugin già iniettati)
 ```
 
 Livello 1 — RAM (dict in memoria, azzerato a ogni riavvio del processo).
-Livello 2 — Pickle su disco in `CACHE_DIR`, con chiave SHA1 del file sorgente.
+Livello 2 — Pickle su disco in `CACHE_DIR`, con chiave SHA1 del file
+sorgente. Per i file markdown con plugin la chiave include anche l'mtime
+dei template usati: modificare un template invalida automaticamente la
+cache delle pagine che lo usano.
 
 `cache.clean()` va chiamato a fine build per rimuovere i pickle dei file
 non più usati nella run corrente.
+
+#### Plugin / shortcode nei file markdown
+
+I plugin si dichiarano nel frontmatter e si posizionano nel body con un
+placeholder. La sintassi è:
+
+```markdown
+---
+title: Titolo della pagina
+plugins:
+    - galleria:
+          sorgente: "images/galleria1"
+    - galleria:
+          sorgente: "images/galleria2"
+---
+
+Prima galleria: {{< galleria >}}
+
+Seconda galleria: {{< galleria >}}
+```
+
+I placeholder vengono abbinati ai plugin **in ordine posizionale per
+tipo**: il primo `{{< galleria >}}` nel body usa i parametri del primo
+`galleria` nel frontmatter, il secondo usa il secondo, e così via.
+
+I template dei plugin sono file Jinja2 in `PLUGINS_DIR`
+(`TEMPLATES_DIR / plugins`). Il template riceve i parametri dichiarati
+nel frontmatter come variabili Jinja2:
+
+```
+templates/plugins/galleria.jinja2
+```
+
+Se un template dichiarato nel frontmatter non esiste su disco,
+`cache.load` solleva `FileNotFoundError`. Se Jinja2 non è installato
+nel virtualenv, solleva `ImportError`.
+
+La sostituzione avviene **prima** del rendering markdown, così il markup
+prodotto dal template non viene alterato dal renderer.
 
 ### `shortcuts.content` e `shortcuts.i18n`
 
@@ -152,3 +195,4 @@ Il comando per lanciare i test è `pytest` dalla root del progetto.
 ## Metadata
 - Ultima modifica: 2026-06-05
 - Modello: claude-sonnet-4-6
+
