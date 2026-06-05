@@ -5,11 +5,11 @@ from babel import Locale
 @dataclass
 class SettingsClass:
 
-    # Risali a partire dal file corrente
-    # (__file__) fino a trovare pyproject.toml
+    # Risali a partire dalla working directory corrente
+    # fino a trovare pyproject.toml
     @staticmethod
     def _get_base_dir() -> Path:
-        cur = Path(__file__).resolve()
+        cur = Path.cwd().resolve()
         for parent in [cur, *cur.parents]:
             if (parent / "pyproject.toml").exists():
                 return parent
