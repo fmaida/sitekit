@@ -123,6 +123,48 @@ nel virtualenv, solleva `ImportError`.
 La sostituzione avviene **prima** del rendering markdown, così il markup
 prodotto dal template non viene alterato dal renderer.
 
+### `router`
+
+Risolve URL multilingua in percorsi di file di contenuto e viceversa,
+seguendo la convenzione page-bundle. La lingua di default è servita
+senza prefisso; le lingue non-default hanno un prefisso di 2 caratteri.
+
+```python
+from sitekit.router import Router
+
+router = Router()                          # usa settings.CONTENT_DIR
+router = Router(cartella_base=Path("...")) # cartella personalizzata
+
+# URL → file + template
+percorso, template = router.da_url("/chi-siamo")
+# /chi-siamo       → CONTENT_DIR/chi-siamo/index.md,    "single.html"
+# /en/chi-siamo    → CONTENT_DIR/chi-siamo/index.en.md, "single.html"
+# /                → CONTENT_DIR/index.md,               "home.html"
+
+# file → URL
+url = router.verso_url(Path("content/chi-siamo/index.en.md"))
+# → "/en/chi-siamo/"
+
+# alias (es. URL inglese che punta a cartella italiana)
+router.aggiungi_alias("about-us", "chi-siamo")
+
+# registrazione nei global Jinja2 di Flask
+router.register(app)   # rende `router` disponibile nei template
+```
+
+**Ordine di ricerca file** per `da_url`: prima `index.md` (o
+`index.<lingua>.md`), poi `_index.md` (o `_index.<lingua>.md`),
+infine gli alias registrati.
+
+**Template**: il nome viene letto dal campo `template` nel frontmatter
+del file trovato; se assente usa `home.html` per la homepage o
+`single.html` per le altre pagine. L'estensione `.html` viene aggiunta
+automaticamente se mancante.
+
+Solleva `ValueError` se l'URL tenta di uscire dalla cartella base
+(traversal via `..`), `FileNotFoundError` se nessun file o alias
+corrisponde all'URL.
+
 ### `shortcuts.content` e `shortcuts.i18n`
 
 Wrapper di `cache.load` che prefissano rispettivamente `CONTENT_DIR` e `I18N_DIR`.
@@ -195,4 +237,5 @@ Il comando per lanciare i test è `pytest` dalla root del progetto.
 ## Metadata
 - Ultima modifica: 2026-06-05
 - Modello: claude-sonnet-4-6
+
 
