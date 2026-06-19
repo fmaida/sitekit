@@ -58,6 +58,8 @@ picture = images.copy(
 
 `imgcache.salva()` va chiamato esplicitamente a fine build per persistere il db su disco. In `boilerplate-flask/tools/build.py` viene già fatto.
 
+`imgcache.clean()` va chiamato a fine build per rimuovere da `imagesdb.json` le entry orfane (immagini eliminate o non più referenziate nei contenuti). Chiama `salva()` internamente, quindi sostituisce `imgcache.salva()` quando si vuole anche la pulizia.
+
 **`PictureClass`** — il `__str__` genera il tag `<picture>` completo con
 srcset per tutti e tre i formati e tutti i breakpoint. Il nome del file
 viene ricavato automaticamente da `folder.name` (= stem dell'immagine

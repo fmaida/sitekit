@@ -1,3 +1,4 @@
+import time
 from pathlib import Path
 
 import frontmatter
@@ -6,6 +7,7 @@ import yaml
 import json
 import pickle
 
+from sitekit import shortcodes
 from sitekit.settings import settings
 from .hash import _calcola_sha1
 from .normalize import _normalize_keys
@@ -63,6 +65,9 @@ def load(input_file: Path) -> dict | None:
     plugin_paths: list[Path] = []
     if input_file.suffix.lower() in (".md", ".markdown"):
         plugin_paths = _estrai_plugin_paths(input_file)
+        for percorso in shortcodes.percorsi_template(input_file):
+            if percorso not in plugin_paths:
+                plugin_paths.append(percorso)
 
     dati = None
     checksum_origine = _calcola_sha1(input_file, plugin_paths or None)
@@ -150,6 +155,8 @@ def _carica_frontmatter(input_file: Path) -> dict:
     if plugins_raw:
         content_raw = _renderizza_plugin(content_raw, plugins_raw)
 
+    content_raw = shortcodes.renderizza(content_raw)
+
     temp["content"] = markdown.markdown(content_raw)
 
     return temp
@@ -157,8 +164,8 @@ def _carica_frontmatter(input_file: Path) -> dict:
 def clean():
     """
     Ripulisce la cartella di cache,
-    Cancellando tutti i file non utilizzati
-    durante l'esecuzione
+    cancellando tutti i file non utilizzati
+    durante l'esecuzione.
     """
 
     # Rimuove tutti i file con estensione
@@ -169,7 +176,7 @@ def clean():
                 file_cache.unlink()
             except Exception:
                 pass
-    
+
     # Rimuove eventuali file con estensione
     # .tmp rimasti orfani
     for tmp in settings.CACHE_DIR.glob("*.tmp"):
@@ -177,6 +184,29 @@ def clean():
             tmp.unlink()
         except Exception:
             pass
+
+
+def prune(days: int = 60) -> None:
+    """
+    Cancella tutti i file in CACHE_DIR più vecchi di N giorni.
+
+    Va chiamata una volta a ogni avvio dell'applicazione per
+    tenere la cartella di cache sotto controllo. Viene già
+    invocata automaticamente all'importazione del modulo con
+    il valore di default (60 giorni).
+
+    Args:
+        days: Numero di giorni oltre i quali un file viene
+            considerato scaduto e cancellato. Default: 60.
+    """
+
+    soglia = time.time() - (days * 86_400)
+    for f in settings.CACHE_DIR.iterdir():
+        if f.is_file() and f.stat().st_mtime < soglia:
+            try:
+                f.unlink()
+            except Exception:
+                pass
 
 
 # Inizializzazione

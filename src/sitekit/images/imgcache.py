@@ -7,6 +7,10 @@ from sitekit.settings import settings
 from .hash import _calcola_sha1
 
 
+# set globale con le entry toccate in questa run
+_used_entries: set = set()
+
+
 def svuota() -> None:
     """
     Svuota il file indice
@@ -54,11 +58,30 @@ def verifica_e_aggiungi(input_file: Path, longest_side: int, output_path_folder:
 
     if ricercato in CACHE and files_exist:
         # Esiste già in cache E i file sono su disco
+        _used_entries.add(ricercato)
         return False, hash_calcolato
     else:
         # Non esiste ancora O i file mancano
         CACHE.add(ricercato)
+        _used_entries.add(ricercato)
         return True, hash_calcolato
+
+def clean() -> None:
+    """
+    Rimuove da CACHE le entry non toccate durante la build
+    corrente e persiste il risultato su disco.
+
+    Va chiamata a fine build, dopo aver processato tutte le
+    immagini, esattamente come cache.clean() per i pickle.
+    Le entry orfane — immagini rimosse o non più referenziate
+    nei contenuti — vengono eliminate da imagesdb.json.
+    """
+
+    global CACHE
+
+    CACHE &= _used_entries
+    salva()
+
 
 def salva() -> None:
     global CACHE
