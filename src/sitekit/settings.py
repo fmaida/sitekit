@@ -52,6 +52,7 @@ class SettingsClass:
         self.BUILD_DIR = self.BASE_DIR / "build"
         self.set_i18n_dir(self.BASE_DIR / "i18n")
         self.STATIC_DIR = self.BASE_DIR / "static"
+        self.STATIC_CONTENT = "/static"
         self.TEMPLATES_DIR = self.BASE_DIR / "templates"
         self.PLUGINS_DIR = self.TEMPLATES_DIR / "plugins"
         self.SITE_LANGUAGES = self._carica_lingue_disponibili()

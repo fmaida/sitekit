@@ -4,6 +4,7 @@ import markdown
 
 from sitekit.settings import settings
 from .attributi import analizza_attributi
+from .filtri import static
 
 
 # Forme accoppiate: aprono con il nome e chiudono con "end".
@@ -50,6 +51,7 @@ class ProcessoreShortcode:
             loader=FileSystemLoader(str(settings.PLUGINS_DIR)),
             autoescape=False,
         )
+        self._ambiente.globals["static"] = static
 
 
     def processa(self, content_raw: str) -> str:

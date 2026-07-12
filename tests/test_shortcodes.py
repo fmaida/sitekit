@@ -5,6 +5,7 @@ import pytest
 
 from sitekit import shortcodes
 from sitekit.shortcodes.attributi import analizza_attributi
+from sitekit.shortcodes.filtri import static
 from sitekit.shortcodes.processore import ProcessoreShortcode
 from sitekit.settings import settings
 
@@ -20,6 +21,8 @@ _TEMPLATE_FIGURE = (
 )
 
 _TEMPLATE_NOTA = '<aside class="{{ tipo | default(\'info\') }}">{{ content | safe }}</aside>'
+
+_TEMPLATE_MEDIA = '<img src="{{ static(url) }}">'
 
 
 # ---------------------------------------------------------------------------
@@ -37,6 +40,7 @@ def plugins_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     cartella.mkdir()
     (cartella / "figure.jinja2").write_text(_TEMPLATE_FIGURE, encoding="utf-8")
     (cartella / "nota.jinja2").write_text(_TEMPLATE_NOTA, encoding="utf-8")
+    (cartella / "media.jinja2").write_text(_TEMPLATE_MEDIA, encoding="utf-8")
 
     monkeypatch.setattr(settings, "PLUGINS_DIR", cartella)
 
@@ -152,6 +156,40 @@ class TestAutochiusuraEAccoppiati:
         sorgente = '{{< figure url="/a.jpg" >}}'
 
         assert shortcodes.renderizza(sorgente) == sorgente
+
+
+# ---------------------------------------------------------------------------
+# Test: helper static()
+# ---------------------------------------------------------------------------
+
+class TestStatic:
+
+    def test_prefissa_static(self) -> None:
+        assert static("/images/x.jpg") == "/static/images/x.jpg"
+
+
+    def test_senza_slash_iniziale(self) -> None:
+        assert static("audio/x.mp3") == "/static/audio/x.mp3"
+
+
+    def test_url_assoluto_invariato(self) -> None:
+        url = "https://cdn.example.com/x.css"
+
+        assert static(url) == url
+
+
+    def test_rispetta_static_content_personalizzato(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(settings, "STATIC_CONTENT", "/assets")
+
+        assert static("/js/app.js") == "/assets/js/app.js"
+
+
+    def test_disponibile_nel_template(self) -> None:
+        html = shortcodes.renderizza('{{< media url="/video/clip.mp4" />}}')
+
+        assert 'src="/static/video/clip.mp4"' in html
 
 
 # ---------------------------------------------------------------------------
