@@ -383,8 +383,10 @@ pyrightconfig.json
 .cache/*
 
 # Cartella unita dalla pipeline degli asset: è generata,
-# le sorgenti stanno in resources/ e static/
-assets/
+# le sorgenti stanno in resources/ e static/.
+# Lo slash iniziale la ancora alla root del repository: senza,
+# il pattern nasconderebbe anche src/sitekit/assets/, che è codice.
+/assets/
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,python,flask,pycharm+all
 
