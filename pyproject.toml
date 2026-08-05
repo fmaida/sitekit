@@ -1,6 +1,6 @@
 [project]
 name = "sitekit"
-version = "1.0.8b1"
+version = "1.0.8b2"
 description = ""
 authors = [
     {name = "Francesco Maida",email = "francesco.maida@gmail.com"}
