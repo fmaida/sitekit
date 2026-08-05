@@ -6,7 +6,7 @@ from . import images, imgcache
 from .picture_class import PictureClass
 
 
-def copy(source_image: Path, destination_folder: Path, aspect_ratio: str = "unchanged", anchor: str = "middle", alt: str = "") -> PictureClass:
+def copy(source_image: Path, destination_folder: Path, aspect_ratio: str = "unchanged", anchor: str = "middle", alt: str = "", base_url: str | None = None) -> PictureClass:
     """
     Copies an image file to a specified destination, creating multiple resized
     versions of the image with predefined sizes. Ensures the source file exists
@@ -21,6 +21,9 @@ def copy(source_image: Path, destination_folder: Path, aspect_ratio: str = "unch
         anchor (str): The vertical anchor position for cropping the image.
         alt (str): Testo alternativo per il tag <img>. Importante per
             accessibilità e SEO. Default stringa vuota.
+        base_url (str | None): URL pubblico della cartella di destinazione,
+            di norma ottenuto da `assets.url(...)`. Se non viene passato,
+            PictureClass deduce l'URL dal percorso su disco.
 
     Returns:
         PictureClass: An instance of PictureClass representing the folder
@@ -38,9 +41,15 @@ def copy(source_image: Path, destination_folder: Path, aspect_ratio: str = "unch
             f"Non è un immagine valida: {str(source_image)}"
         )
         
-    # Verifica che la cartella di output esista        
+    # Verifica che la cartella di output esista
     destination_folder /= source_image.stem
     destination_folder.mkdir(parents=True, exist_ok=True)
+
+    # base_url descrive la cartella passata dal chiamante: i
+    # breakpoint stanno nella sottocartella con lo stem dell'immagine,
+    # quindi l'URL segue lo stesso salto appena fatto su disco.
+    if base_url is not None:
+        base_url = base_url.rstrip("/") + "/" + source_image.stem
 
     try:
         s = images.copy_single(source_image, destination_folder, 
@@ -58,4 +67,4 @@ def copy(source_image: Path, destination_folder: Path, aspect_ratio: str = "unch
     except Exception as e:
          print(f"Errore durante la copia: {e}")
 
-    return PictureClass(folder=destination_folder, alt=alt)
+    return PictureClass(folder=destination_folder, alt=alt, base_url=base_url)

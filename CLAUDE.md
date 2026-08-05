@@ -8,6 +8,12 @@ Libreria Python "coltellino svizzero" pensata per essere usata come dipendenza i
 - **Test**: pytest (`poetry run pytest` dalla root)
 - Il progetto usa `src/` layout: i sorgenti stanno in `src/sitekit/`
 
+`API-CONTRACT.md` nella root descrive la superficie pubblica del pacchetto
+per gli agenti che lo **consumano** (questo file serve a chi lo sviluppa).
+Va rigenerato con la skill `api-contract` dopo ogni modifica all'API
+pubblica, nello stesso momento in cui la si fa: un contratto obsoleto è
+peggio di nessun contratto.
+
 ## Settings (`settings.py`)
 
 Singleton `settings` (istanza di `SettingsClass`) disponibile ovunque via
@@ -26,21 +32,26 @@ esplicitamente è `BASE_URL`.
 | `CONTENT_DIR` | `BASE_DIR / content` | File markdown/yaml/json dei contenuti |
 | `BUILD_DIR` | `BASE_DIR / build` | Output del freeze |
 | `I18N_DIR` | `BASE_DIR / i18n` | File JSON di traduzione |
-| `STATIC_DIR` | `BASE_DIR / static` | Asset statici |
-| `STATIC_CONTENT` | `/static` | Prefisso URL con cui gli asset statici vengono serviti |
+| `STATIC_DIR` | `BASE_DIR / static` | Sorgenti già pronti (css, js, font) |
+| `RESOURCES_DIR` | `BASE_DIR / resources` | Sorgenti da elaborare (immagini da ridimensionare) |
+| `ASSETS_DIR` | `BASE_DIR / assets` | Cartella unita, servita e copiata nel build |
+| `ASSETS_URL` | `/assets` | Prefisso URL con cui `ASSETS_DIR` viene servita |
 | `TEMPLATES_DIR` | `BASE_DIR / templates` | Template Jinja2 |
 | `PLUGINS_DIR` | `TEMPLATES_DIR / plugins` | Template Jinja2 dei plugin/shortcode |
 | `SITE_LANGUAGES` | auto da I18N_DIR | Lista di tuple `(codice, nome)` |
 | `SITE_LANGUAGE_CODES` | derivata | Solo i codici di `SITE_LANGUAGES` |
 | `SITE_LANGUAGE_NAMES` | derivata | Solo i nomi di `SITE_LANGUAGES` |
 | `DEFAULT_LANGUAGE` | `it` | Lingua servita senza prefisso né suffisso |
-| `BUNDLE_ASSETS_URL` | `cache/{slug}` | Cartella (dentro static) degli asset di un page bundle |
+| `BUNDLE_ASSETS_SUBDIR` | `images` | Sottocartella di `assets/` in cui finiscono gli asset dei page bundle |
+| `BUNDLE_ASPECT_RATIO` | `4:3` | Aspect ratio con cui vengono convertite le immagini dei page bundle |
 | `VERBOSE` | `False` | Abilita l'output diagnostico |
 
-`STATIC_DIR` e `STATIC_CONTENT` non sono la stessa cosa e vanno tenute
-allineate a mano: la prima è la cartella su disco in cui vengono scritti
-gli asset, la seconda è il prefisso URL con cui il server li espone (usato
-dal filtro `static` degli shortcode).
+`STATIC_DIR` non è più una cartella di output: ci vanno solo i file che non
+hanno bisogno di essere rigenerati. Tutto ciò che la libreria produce passa
+per la pipeline della sezione [`assets`](#assets) e finisce in `ASSETS_DIR`,
+l'unica cartella servita. `ASSETS_DIR` e `ASSETS_URL` sono le due facce
+della stessa cosa — cartella su disco e prefisso URL — e vanno tenute
+allineate a mano.
 
 **`I18N_DIR` va cambiata solo con `settings.set_i18n_dir(percorso)`**, mai
 assegnando l'attributo: il metodo ricalcola `SITE_LANGUAGES`,
@@ -50,21 +61,96 @@ valori vecchi.
 
 ## Moduli
 
+### `assets`
+
+La pipeline che porta i file dai sorgenti alla cartella servita. Separa ciò
+che si scrive a mano da ciò che viene generato, e garantisce che l'URL
+stampato nel markup e il percorso scritto su disco descrivano lo stesso
+posto.
+
+```
+resources/           sorgenti DA ELABORARE (immagini da ridimensionare)
+static/              sorgenti GIÀ PRONTI (css, js, font)
+content/<bundle>/    immagini dei page bundle, accanto al markdown
+        │
+        │  conversione (images.copy)
+        ▼
+.cache/assets/       output delle conversioni
+        │
+        │  assets.build()
+        ▼
+assets/              unica cartella servita in dev e copiata nel build
+```
+
+`resources/` e `static/` sono le uniche cartelle che si modificano a mano;
+`assets/` e `.cache/` sono generate e vanno in `.gitignore`.
+
+```python
+from sitekit import assets
+
+assets.build()                          # unisce le tre sorgenti in ASSETS_DIR
+assets.destinazione("images/post-1")    # Path dentro .cache/assets dove scrivere
+assets.url("images/post-1")             # "/assets/images/post-1"
+assets.register(app)                    # route per il server di prova + build()
+```
+
+**`destinazione()` e `url()` vanno usate in coppia**: sono le due facce
+dello stesso sottopercorso, ed è ciò che impedisce a dove si scrive e a
+cosa si stampa di divergere. `destinazione()` è quello che si passa come
+`destination_folder` a `images.copy`.
+
+**Smistamento**: la struttura di origine viene ricopiata tale e quale,
+senza euristiche sull'estensione. `static/css/style.css` diventa
+`assets/css/style.css`, `resources/images/logo.png` diventa
+`assets/images/logo.png`.
+
+**Collisioni**: l'unione applica in ordine `.cache/assets`, `resources`,
+`static` — a parità di percorso vince l'ultima. Con `VERBOSE` attivo ogni
+collisione viene segnalata, perché di norma è un errore.
+
+`build()` è **incrementale**: riscrive un file solo se manca o se differisce
+per dimensione o data, quindi si può chiamare a ogni avvio
+dell'applicazione. Con `build(pulisci=True)` rimuove anche i file di
+`ASSETS_DIR` che nessuna sorgente produce più.
+
+**Servire gli asset**: l'app punta lo static folder ad `ASSETS_DIR`, così
+sviluppo e freeze guardano gli stessi byte e Frozen-Flask copia la cartella
+da sé:
+
+```python
+app = Flask(__name__,
+            static_folder=settings.ASSETS_DIR,
+            static_url_path=settings.ASSETS_URL)
+assets.build()
+```
+
+`assets.register(app)` aggiunge una route dedicata quando l'app non è stata
+costruita così, ma per il freeze conviene la forma qui sopra: una route con
+segnaposto `<path:>` non è scopribile da Frozen-Flask.
+
 ### `images`
 
 Converte e ridimensiona un'immagine sorgente in 4 breakpoint (400, 800, 1200, 1600px) nei formati AVIF, WebP e JPEG. Il breakpoint 1600px mantiene sempre l'aspect ratio originale; gli altri rispettano il parametro `aspect_ratio`.
 
 ```python
-from sitekit import images
+from sitekit import assets, images
 picture = images.copy(
     source_image=Path("content/hero.jpg"),
-    destination_folder=Path("static/images"),
+    destination_folder=assets.destinazione("images/hero"),
     aspect_ratio="16:9",   # default: "unchanged"
     anchor="top",          # "top" | "middle" | "bottom", default "middle"
     alt="Descrizione SEO", # default: stringa vuota
+    base_url=assets.url("images/hero"),
 )
 # picture è un PictureClass; str(picture) restituisce il tag <picture> HTML
 ```
+
+`destination_folder` e `base_url` descrivono lo stesso posto — cartella su
+disco e URL pubblico — e vanno presi in coppia da `assets.destinazione()` e
+`assets.url()`. I file finiscono in una **sottocartella con lo stem
+dell'immagine**: `hero.jpg` diventa `images/hero/hero/hero__800.jpg`, mai
+`images/hero/hero.jpg`. `images.copy` fa lo stesso salto anche sul
+`base_url`, quindi si passa a entrambi lo stesso sottopercorso.
 
 **Caching a due livelli:**
 1. `imgcache` (disco) — `imagesdb.json` in `CACHE_DIR`. Chiave:
@@ -73,14 +159,20 @@ picture = images.copy(
 2. Cache RAM — tiene in memoria l'ultimo file PIL aperto per evitare
    letture ripetute dello stesso sorgente.
 
-`imgcache.salva()` va chiamato esplicitamente a fine build per persistere il db su disco. In `boilerplate-flask/tools/build.py` viene già fatto.
+`imgcache.salva()` va chiamato esplicitamente a fine build per persistere il db su disco.
 
-`imgcache.clean()` va chiamato a fine build per rimuovere da `imagesdb.json` le entry orfane (immagini eliminate o non più referenziate nei contenuti). Chiama `salva()` internamente, quindi sostituisce `imgcache.salva()` quando si vuole anche la pulizia.
+`imgcache.clean()` va chiamato a fine build per rimuovere da `imagesdb.json` le entry orfane (immagini eliminate o non più referenziate nei contenuti). Chiama `salva()` internamente, quindi sostituisce `imgcache.salva()` quando si vuole anche la pulizia: è quello che fa `boilerplate-flask/src/tools/build.py`.
 
 **`PictureClass`** — il `__str__` genera il tag `<picture>` completo con
 srcset per tutti e tre i formati e tutti i breakpoint. Il nome del file
 viene ricavato automaticamente da `folder.name` (= stem dell'immagine
 sorgente), quindi non va mai hardcoded.
+
+Senza `base_url` l'URL viene dedotto dal percorso su disco cercandoci
+dentro la sottostringa `/static`: funziona solo per i file che stanno
+sotto una cartella con quel nome, e con la pipeline degli asset non è più
+il caso. È un fallback per i chiamanti vecchi — **nel codice nuovo passare
+sempre `base_url`**.
 
 ### `cache`
 
@@ -205,13 +297,15 @@ nella variabile riservata `content`:
 
 I template stanno in `PLUGINS_DIR`, come per i plugin del frontmatter, e
 si chiamano `<nome>.jinja2`. Nel template è disponibile il filtro globale
-`static()`, che prefissa un percorso con `STATIC_CONTENT` lasciando
-invariati gli URL assoluti (`http://`, `https://`, `//`):
+`asset()`, che prefissa un percorso con `ASSETS_URL` lasciando invariati
+gli URL assoluti (`http://`, `https://`, `//`):
 
 ```jinja2
-<img src="{{ static('/images/foto/foto__800.jpg') }}">
-{# → /static/images/foto/foto__800.jpg #}
+<img src="{{ asset('images/foto/foto__800.jpg') }}">
+{# → /assets/images/foto/foto__800.jpg #}
 ```
+
+`static()` è un alias di `asset()`, tenuto per i template già scritti.
 
 **Template mancante**: a differenza dei plugin del frontmatter, che
 sollevano `FileNotFoundError`, uno shortcode il cui template non esiste
@@ -230,24 +324,30 @@ shortcode di un file. Serve alla cache: includendoli nel digest, la chiave
 cambia quando uno di essi viene modificato. I template inesistenti vengono
 ignorati, coerentemente con il rendering tollerante.
 
-### `pagina`
+### `pagebundle`
 
-Carica una pagina composta da **uno o più** file frontmatter+markdown.
-Una pagina lunga può stare tutta in un file solo oppure essere spezzata
-in file separati: le due forme producono lo **stesso identico dizionario**.
+Carica un page bundle: una pagina composta da **uno o più** file
+frontmatter+markdown, più i suoi asset. Una pagina lunga può stare tutta
+in un file solo oppure essere spezzata in file separati: le due forme
+producono lo **stesso identico dizionario**.
 
 ```python
-from sitekit import pagina
+from sitekit import pagebundle
 
-dati = pagina.load(Path("content/chi-siamo"))           # page bundle
-dati = pagina.load(Path("content/chi-siamo/index.md"))  # file indice esplicito
+dati = pagebundle.load(Path("content/chi-siamo"))           # cartella
+dati = pagebundle.load(Path("content/chi-siamo/index.md"))  # indice esplicito
+dati = pagebundle.load(cartella, copia_asset=False)         # solo lettura
+
+posts = pagebundle.load_collection(Path("content/blog"))    # per data
 
 titolo_italiano = dati["title"]
 titolo_inglese = dati["localization"]["en"]["title"]
 
 # radice fusa con la traduzione: le chiavi non tradotte non spariscono
-inglese = pagina.localizzato(dati, "en")
+inglese = pagebundle.localizzato(dati, "en")
 ```
+
+`load_single` è un alias di `load`, tenuto per il codice che lo usa già.
 
 **Convenzione di naming**: `<stem>[.<sezione>]*[.<lingua>].md`, dove
 `<stem>` è `index` o `_index`. I segmenti si classificano per lunghezza:
@@ -294,7 +394,7 @@ La normalizzazione è ricorsiva e vale anche per un `content:` scritto
 inline nel frontmatter — è ciò che rende equivalenti le due forme. Le
 sezioni senza testo non portano nessuna delle due chiavi.
 
-#### Page bundle
+#### Slug e cartelle-lingua
 
 Il file si chiama `index.md`, ma il nome vero della pagina è quello
 della cartella: `chi-siamo/index.md` è la pagina `chi-siamo`. Finisce in
@@ -317,51 +417,54 @@ Dentro una cartella-lingua i nomi file non portano il suffisso lingua
 (`en/index.fr.md` solleva `ValueError`). Le sottocartelle con nome di 3+
 caratteri (bundle figli, cartelle di asset) vengono ignorate.
 
-**Asset relativi**: un riferimento relativo nel markdown punta sempre
-alla root del page bundle, anche quando il file che lo contiene sta in
-una cartella-lingua. Dopo il rendering, gli `src`/`href` relativi
-diventano URL assoluti sotto `BUNDLE_ASSETS_URL`:
+#### Asset del bundle
 
-```
-![](foto.jpg)   →   <img src="/static/cache/<slug>/foto.jpg">
-```
+Con `copia_asset=True` (il default) `load` converte e copia i file della
+cartella sotto `BUNDLE_ASSETS_SUBDIR / <slug>`, usando
+`assets.destinazione()`. Le immagini `.jpg`, `.jpeg` e `.png` passano per
+`images.copy` con `BUNDLE_ASPECT_RATIO`; `.md`, `.yaml`, `.yml` e `.json`
+sono contenuto e vengono ignorati; tutto il resto viene copiato tal quale.
 
-Restano invariati URL assoluti, percorsi che iniziano con `/`, ancore e
-schemi come `mailto:`, insieme a `content_raw` e ai valori del
-frontmatter. Attributi diversi da `src`/`href` (per esempio il
-`data-src` di un template plugin) non vengono toccati.
+Un riferimento relativo nel markdown punta sempre alla root del page
+bundle, anche quando il file che lo contiene sta in una cartella-lingua.
+Dopo il rendering viene riscritto seguendo **ciò che è finito davvero su
+disco**:
 
-### `pagebundle`
+| Riferimento | Diventa |
+|---|---|
+| `![alt](foto.jpg)` | il tag `<picture>` completo, con srcset per AVIF, WebP e JPEG e `alt` preso dal markdown |
+| `[grande](foto.jpg)` | `/assets/images/<slug>/foto/foto__1600.jpg`, il breakpoint più grande |
+| `[scarica](doc.pdf)` | `/assets/images/<slug>/doc.pdf` |
+| `[dati](dati.yaml)` | invariato: è contenuto, nessuno l'ha copiato |
 
-**Modulo precedente a `pagina`, da non confondere con la sottosezione
-"Page bundle" qui sopra.** Carica un bundle come singolo file
-(`_index.md`, con fallback su `index.md`) tramite `cache.load` e copia gli
-asset della cartella nella destinazione statica. Non conosce i file di
-sezione, le cartelle-lingua né `localization`.
+Il file con il nome originale (`foto.jpg`) **non esiste mai** nella
+destinazione: `images.copy` scrive solo i quattro breakpoint dentro una
+sottocartella con lo stem del file. Per questo un'immagine non può
+diventare un semplice `<img src>`.
 
-```python
-from sitekit import pagebundle
+Restano invariati URL assoluti, percorsi che iniziano con `/`, ancore,
+schemi come `mailto:`, e i riferimenti a file che nella root del bundle
+non ci sono. **Gli asset stanno nella root del bundle**: un
+`video/clip.mp4` in una sottocartella non viene copiato, quindi il suo
+riferimento viene lasciato stare invece di puntare a un file inesistente.
 
-pagebundle.set_media_destination_folder(Path("static/cache"))
-post  = pagebundle.load_single(Path("content/blog/primo-post"))
-posts = pagebundle.load_collection(Path("content/blog"))  # ordinati per data
-```
+Non vengono toccati `content_raw`, i valori del frontmatter, e gli
+attributi diversi da `src`/`href` (per esempio il `data-src` di un
+template plugin).
 
-`load_single` aggiunge al dizionario:
+#### date, cover e collezioni
 
-- `slug` — nome della cartella
-- `date` — dal frontmatter, normalizzata a `YYYY-MM-DD`; se assente, ricavata
-  dalla data di creazione della cartella
-- `cover` — stem del primo file immagine che contiene `_cover` nel nome
+`load` aggiunge al dizionario:
 
-Gli asset vengono copiati in `MEDIA_DESTINATION_FOLDER / <nome cartella>`
-(default `STATIC_DIR / cache`). Le immagini `.jpg`, `.jpeg` e `.png` passano
-per `images.copy` con `aspect_ratio="4:3"` **fisso**; `.md`, `.yaml`, `.yml`
-e `.json` vengono ignorati; tutto il resto viene copiato tal quale.
+- `slug` — nome della cartella, sovrascritto da uno `slug:` nel frontmatter
+- `date` — normalizzata a `YYYY-MM-DD`, **solo se** presente nel frontmatter
+- `cover` — stem del primo file immagine che contiene `_cover` nel nome,
+  solo se ce n'è uno
 
-Per pagine nuove usare `pagina`, che copre gli stessi casi in modo più
-generale. `pagebundle` resta per il codice che lo usa già, in particolare
-per le collezioni ordinate per data (blog, news), che `pagina` non offre.
+`load_collection(cartella)` carica tutte le sottocartelle come page bundle
+e le ordina per data; le pagine senza `date` la ricavano lì dalla data di
+creazione della cartella, così l'ordinamento è sempre possibile. È il caso
+d'uso di blog e news.
 
 ### `router`
 
@@ -406,7 +509,7 @@ Solleva `ValueError` se l'URL tenta di uscire dalla cartella base
 corrisponde all'URL.
 
 In `verso_url` il suffisso è un codice lingua solo se lungo esattamente
-2 caratteri: i file di sezione di `pagina` (`index.intro.md`) non sono
+2 caratteri: i file di sezione di `pagebundle` (`index.intro.md`) non sono
 pagine e sollevano `ValueError`.
 
 ### `shortcuts.content` e `shortcuts.i18n`
@@ -557,11 +660,16 @@ params = configurazioni.vuoto(slug="", lingua="en")  # minimo per non far crasha
 
 `carica` legge `_index.md` (fallback `index.md`) più, se presenti,
 `descriptions/`, `openings.yaml`, `menu.yaml` e `directions.yaml` nella
-stessa cartella; converte tutte le immagini che vi trova; e aggiunge
-`json-ld`, `base_url`, `slug`, `lang`, `accepted_languages` e i `<link
-rel="alternate">` hreflang. Lingue fuori da `SITE_LANGUAGE_CODES` fanno
-fallback su `en`. Se il frontmatter contiene `redirect`, il caricamento si
-ferma lì e gli altri file non vengono letti.
+stessa cartella; converte tutte le immagini che vi trova in
+`assets.destinazione("images/<slug>")`; e aggiunge `json-ld`, `base_url`,
+`slug`, `lang`, `accepted_languages` e i `<link rel="alternate">` hreflang.
+Lingue fuori da `SITE_LANGUAGE_CODES` fanno fallback su `en`. Se il
+frontmatter contiene `redirect`, il caricamento si ferma lì e gli altri
+file non vengono letti.
+
+I percorsi che restituisce (`images`, `gallery_path`) sono **relativi**
+alla radice degli asset — `images/<slug>/<stem>/<stem>` — e vanno passati
+al filtro `asset()` nei template.
 
 C'è una **cache in RAM per `(sito, lingua)` con TTL di 12 ore**, separata da
 quella di `cache`: `configurazioni.CACHE`. Un processo long-running non vede
@@ -579,11 +687,11 @@ lingua (`elenca`, `esiste`, `carica`, `carica_fallback`, `salva`).
 ## Convenzioni sui test
 
 I test stanno in `tests/`, un file `test_<modulo>.py` per modulo. La
-copertura è **parziale**: hanno test `cache`, `images`, `jsonld`,
-`openings`, `pagina`, `robots`, `router`, `rssreader` e `shortcodes`
+copertura è **parziale**: hanno test `assets`, `cache`, `images`, `jsonld`,
+`openings`, `pagebundle`, `robots`, `router`, `rssreader` e `shortcodes`
 (`settings` sotto il nome `test_impostazioni.py`). Non ne hanno
-`configurazioni`, `localize`, `memos`, `pagebundle`, `privacy`,
-`shortcuts` e `sitemap`: toccando quei moduli, conviene aggiungerli.
+`configurazioni`, `localize`, `memos`, `privacy`, `shortcuts` e `sitemap`:
+toccando quei moduli, conviene aggiungerli.
 
 Le fixture usano `tmp_path` di pytest per l'isolamento su disco.
 I globali di modulo (`imgcache.CACHE`, `images.ultima_immagine`) vengono
@@ -595,7 +703,7 @@ Il comando per lanciare i test è `pytest` dalla root del progetto.
 I file di esempio stanno in `tests/examples/`. Le tre cartelle in
 `tests/examples/frontmatter+markdown/` (`esempio_unito`,
 `esempio_separato`, `esempio_cartelle_lingua`) descrivono la stessa
-pagina nelle tre forme accettate da `pagina.load` e devono restare
+pagina nelle tre forme accettate da `pagebundle.load` e devono restare
 equivalenti: i test verificano che producano lo stesso dizionario.
 
 ## Metadata

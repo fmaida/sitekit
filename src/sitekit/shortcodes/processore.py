@@ -4,7 +4,7 @@ import markdown
 
 from sitekit.settings import settings
 from .attributi import analizza_attributi
-from .filtri import static
+from .filtri import asset, static
 
 
 # Forme accoppiate: aprono con il nome e chiudono con "end".
@@ -51,6 +51,7 @@ class ProcessoreShortcode:
             loader=FileSystemLoader(str(settings.PLUGINS_DIR)),
             autoescape=False,
         )
+        self._ambiente.globals["asset"] = asset
         self._ambiente.globals["static"] = static
 
 

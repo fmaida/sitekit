@@ -24,9 +24,23 @@ class PictureClass:
     " sizes="(max-width: 800px) 100vw, 800px" alt="{alt}" loading="lazy">
 </picture>"""
 
-    def __init__(self, folder: Path, alt: str = ""):
+    def __init__(self, folder: Path, alt: str = "", base_url: str | None = None):
+        """
+        Args:
+            folder: cartella su disco che contiene i breakpoint
+                generati, il cui nome è lo stem dell'immagine
+                sorgente.
+            alt: testo alternativo per il tag <img>.
+            base_url: URL pubblico della cartella. Va passato da chi
+                conosce la pipeline degli asset (di norma
+                `assets.url(...)`); se manca, l'URL viene dedotto dal
+                percorso su disco, che funziona solo finché i file
+                stanno sotto una cartella chiamata "static".
+        """
+
         self.folder = folder
         self.alt = alt
+        self.base_url = base_url
 
     @staticmethod
     def _tronca_a_static(path: Path) -> str:
@@ -37,6 +51,9 @@ class PictureClass:
         return path_str
 
     def __str__(self):
-        base = str(self._tronca_a_static(self.folder))
+        if self.base_url is not None:
+            base = self.base_url.rstrip("/")
+        else:
+            base = str(self._tronca_a_static(self.folder))
         stem = self.folder.name
         return PictureClass.CODICE.format(base=base, stem=stem, alt=self.alt)

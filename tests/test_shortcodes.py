@@ -164,12 +164,12 @@ class TestAutochiusuraEAccoppiati:
 
 class TestStatic:
 
-    def test_prefissa_static(self) -> None:
-        assert static("/images/x.jpg") == "/static/images/x.jpg"
+    def test_prefissa_assets(self) -> None:
+        assert static("/images/x.jpg") == "/assets/images/x.jpg"
 
 
     def test_senza_slash_iniziale(self) -> None:
-        assert static("audio/x.mp3") == "/static/audio/x.mp3"
+        assert static("audio/x.mp3") == "/assets/audio/x.mp3"
 
 
     def test_url_assoluto_invariato(self) -> None:
@@ -178,18 +178,24 @@ class TestStatic:
         assert static(url) == url
 
 
-    def test_rispetta_static_content_personalizzato(
+    def test_rispetta_assets_url_personalizzato(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        monkeypatch.setattr(settings, "STATIC_CONTENT", "/assets")
+        monkeypatch.setattr(settings, "ASSETS_URL", "/risorse")
 
-        assert static("/js/app.js") == "/assets/js/app.js"
+        assert static("/js/app.js") == "/risorse/js/app.js"
+
+
+    def test_asset_e_alias_di_static(self) -> None:
+        from sitekit.shortcodes.filtri import asset
+
+        assert asset("/js/app.js") == static("/js/app.js")
 
 
     def test_disponibile_nel_template(self) -> None:
         html = shortcodes.renderizza('{{< media url="/video/clip.mp4" />}}')
 
-        assert 'src="/static/video/clip.mp4"' in html
+        assert 'src="/assets/video/clip.mp4"' in html
 
 
 # ---------------------------------------------------------------------------

@@ -184,7 +184,7 @@ class Router:
             CONTENT_DIR/index.en.md            → /en/
 
         Il suffisso è un codice lingua solo se lungo esattamente 2
-        caratteri: i file di sezione di sitekit.pagina, come
+        caratteri: i file di sezione di sitekit.pagebundle, come
         index.intro.md, non sono pagine e sollevano ValueError.
 
         Args:

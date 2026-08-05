@@ -1,27 +1,29 @@
-from sitekit.settings import settings
+from sitekit.assets import percorsi
 
 
-def static(percorso: str) -> str:
+def asset(percorso: str) -> str:
     """
-    Risolve un percorso relativo rispetto alla cartella static.
+    Risolve un percorso relativo rispetto alla cartella assets.
 
-    Vale per qualsiasi asset servito da static (immagini, audio,
-    video, css, javascript). Gli URL assoluti (http, https o
+    Vale per qualsiasi risorsa servita da assets (immagini, audio,
+    video, css, javascript, font). Gli URL assoluti (http, https o
     protocol-relative) vengono restituiti invariati.
 
     Args:
-        percorso: percorso dell'asset relativo a static, ad
-            esempio "/images/immagine/immagine__800.jpg".
+        percorso: percorso della risorsa relativo alla radice degli
+            asset, ad esempio "images/immagine/immagine__800.jpg".
 
     Returns:
-        URL completo con il prefisso STATIC_CONTENT, ad esempio
-        "/static/images/immagine/immagine__800.jpg".
+        URL completo con il prefisso ASSETS_URL, ad esempio
+        "/assets/images/immagine/immagine__800.jpg".
     """
 
     if percorso.startswith(("http://", "https://", "//")):
         return percorso
 
-    base = settings.STATIC_CONTENT.rstrip("/")
-    resto = percorso.lstrip("/")
+    return percorsi.url(percorso)
 
-    return f"{base}/{resto}"
+
+# I template dei plugin scritti finora usano il nome "static":
+# resta valido come alias di "asset".
+static = asset

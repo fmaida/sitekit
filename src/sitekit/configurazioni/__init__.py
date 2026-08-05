@@ -10,6 +10,7 @@ from sitekit import cache, jsonld
 from .themes import _carica_temi
 from sitekit.configurazioni import descrizioni
 from sitekit import images
+from sitekit.assets import percorsi as assets
 from sitekit.settings import settings
 
 # Questa variabile tiene in memoria
@@ -204,7 +205,7 @@ def _carica_scheda_ristorante(sito, lingua) -> dict | None:
     # in cui si trova il file di configurazione
     temp["images"] = _carica_immagini(sito=sito,
                                       cartella_immagini=cartella,
-                                      cartella_destinazione=settings.STATIC_DIR / "images" / sito)
+                                      cartella_destinazione=assets.destinazione(f"images/{sito}"))
 
     # Abbiamo convertito tutte le immagini. Il
     # processo di conversione è stato lunghino,

@@ -157,19 +157,26 @@ class TestCacheRAMImmagine:
                            longest_side=400, output_formats=["jpeg"])
         assert images.ultima_immagine_sha1 == _calcola_sha1(immagine_test)
 
-    def test_stessa_immagine_non_riapre_il_file(self, immagine_test, cartella_output, mocker):
+    def test_stessa_immagine_non_riapre_il_file(self, immagine_test, cartella_output, monkeypatch):
         """
         Chiamando copy_single due volte sullo stesso file (con longest_side diverso
         così imgcache non skippa), Image.open deve essere chiamata una sola volta.
         """
-        spy = mocker.spy(Image, "open")
+        aperture = []
+        apri = Image.open
+
+        def _conta_aperture(*args, **kwargs):
+            aperture.append(args[0] if args else None)
+            return apri(*args, **kwargs)
+
+        monkeypatch.setattr(Image, "open", _conta_aperture)
 
         images.copy_single(immagine_test, cartella_output,
                            longest_side=400, output_formats=["jpeg"])
         images.copy_single(immagine_test, cartella_output,
                            longest_side=800, output_formats=["jpeg"])
 
-        assert spy.call_count == 1
+        assert len(aperture) == 1
 
 
 # ---------------------------------------------------------------------------

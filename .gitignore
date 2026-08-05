@@ -381,7 +381,10 @@ poetry.toml
 pyrightconfig.json
 
 .cache/*
-static/cache/*
+
+# Cartella unita dalla pipeline degli asset: è generata,
+# le sorgenti stanno in resources/ e static/
+assets/
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,python,flask,pycharm+all
 

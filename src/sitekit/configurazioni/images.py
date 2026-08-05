@@ -5,6 +5,7 @@ import hashlib
 import io
 import logging
 import shutil
+from sitekit.assets import percorsi
 from sitekit.settings import settings
 from .imgcache import cache_aggiungi
 
@@ -58,19 +59,17 @@ def image_copier(folder_name: Path, image_path: Path):
             logger.info(f"L'immagine esiste già. La salto.")
         return output_path
 
-    # Ottiene la cartella di output delle 
+    # Ottiene la cartella di output delle
     # immagini dentro la cartella build
-    build_images_dir = settings.BUILD_DIR / "static" / "images" / folder_name
-    
+    build_images_dir = settings.BUILD_DIR / "assets" / "images" / folder_name
+
     # Crea la cartella e le precedenti se non esistono
     build_images_dir.mkdir(parents = True, exist_ok=True)
 
-    # Ottiene la cartella di output delle
-    # immagini dentro la cartella src/static
-    static_images_dir = settings.STATIC_DIR / "images" / folder_name
-    
-    # Crea la directory se non esiste
-    static_images_dir.mkdir(parents=True, exist_ok=True)
+    # Ottiene la cartella di output delle immagini
+    # generate, dentro la cache: da lì assets.build()
+    # le porta nella cartella servita
+    static_images_dir = percorsi.destinazione(f"images/{folder_name}")
 
     if VERBOSE:
         logger.info("--------------------------------")

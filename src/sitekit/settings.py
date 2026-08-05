@@ -52,12 +52,15 @@ class SettingsClass:
         self.BUILD_DIR = self.BASE_DIR / "build"
         self.set_i18n_dir(self.BASE_DIR / "i18n")
         self.STATIC_DIR = self.BASE_DIR / "static"
-        self.STATIC_CONTENT = "/static"
+        self.RESOURCES_DIR = self.BASE_DIR / "resources"
+        self.ASSETS_DIR = self.BASE_DIR / "assets"
+        self.ASSETS_URL = "/assets"
         self.TEMPLATES_DIR = self.BASE_DIR / "templates"
         self.PLUGINS_DIR = self.TEMPLATES_DIR / "plugins"
         self.SITE_LANGUAGES = self._carica_lingue_disponibili()
         self.DEFAULT_LANGUAGE = "it"
-        self.BUNDLE_ASSETS_URL = "cache/{slug}"
+        self.BUNDLE_ASSETS_SUBDIR = "images"
+        self.BUNDLE_ASPECT_RATIO = "4:3"
         self.VERBOSE = False
 
 settings = SettingsClass()

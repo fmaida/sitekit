@@ -24,17 +24,20 @@ Un `api_sha256` invariato con `file_sha256` diverso significa che sono cambiati 
 
 | Modulo | api_sha256 | file_sha256 |
 | --- | --- | --- |
-| `sitekit` | `4d772b51fabc0498` | `b33c69bcd76a55b8` |
+| `sitekit` | `1aef9256b064c15c` | `cd3ff431472608ad` |
+| `sitekit.assets` | `d3ad19ff54239ab2` | `c4d61aca7690d5d6` |
+| `sitekit.assets.costruzione` | `c92240c66cc40a60` | `4cc4c77e6ae47794` |
+| `sitekit.assets.percorsi` | `37ca1b03ac5ce093` | `ecaa704dae38a965` |
 | `sitekit.cache` | `890d690ab049c52f` | `2748c075de5a0f4f` |
 | `sitekit.cache.ram` | `8dc87f5117648857` | `c82c90b05fa8639b` |
-| `sitekit.configurazioni` | `2c842c30ae543eab` | `75b2391e813574fd` |
+| `sitekit.configurazioni` | `c7fe2c8f4dc284fa` | `bdcc259194b43785` |
 | `sitekit.configurazioni.descrizioni` | `8c58c8968a20f3fb` | `96127530152bbd5f` |
-| `sitekit.configurazioni.images` | `0297c7887d76b9fe` | `19e427ed5f67c4fb` |
+| `sitekit.configurazioni.images` | `0297c7887d76b9fe` | `9e7780f9a3ffad7e` |
 | `sitekit.configurazioni.imgcache` | `c78e2fd7167a97fc` | `7b6b8003f9406ef0` |
-| `sitekit.images` | `e6fb2b88ff705444` | `2d940ca82207681e` |
+| `sitekit.images` | `ff059c280cabeb4f` | `5cdc4a1519353747` |
 | `sitekit.images.images` | `339a9ab3dd98e357` | `df67bdedf40248ee` |
 | `sitekit.images.imgcache` | `3b1eb946b805471b` | `a1c2509c1e6196c8` |
-| `sitekit.images.picture_class` | `076214e38a08fa76` | `3b82475afb525007` |
+| `sitekit.images.picture_class` | `4b843e3658dd066c` | `5805d29f409e8e41` |
 | `sitekit.jsonld` | `784d114313fb8136` | `bb5a79bdb003cb84` |
 | `sitekit.jsonld.menu` | `350b90329c6f6197` | `49dc5e601b317d1b` |
 | `sitekit.jsonld.schema` | `31da952caea594d9` | `7be792788c843cf5` |
@@ -47,21 +50,21 @@ Un `api_sha256` invariato con `file_sha256` diverso significa che sono cambiati 
 | `sitekit.openings.classes.holidaylistclass` | `1a68890633ca457f` | `70fc78fe9cf08598` |
 | `sitekit.openings.classes.openingsclass` | `060ba3bb731602bc` | `9a80b0c3f86a3c5d` |
 | `sitekit.openings.classes.turnclass` | `d50276826b9e56f3` | `fab77eb109a9df6b` |
-| `sitekit.pagebundle` | `029798132582c24d` | `076f3955f1aebaec` |
-| `sitekit.pagina` | `7c57f06c8d90ceaa` | `3f1c532ffc6ab1d7` |
-| `sitekit.pagina.nomi` | `d4e477999c3ee5cb` | `252f281fd8de6299` |
+| `sitekit.pagebundle` | `99ac4ba347e5dc2a` | `6ae67749faebfe23` |
+| `sitekit.pagebundle.media` | `cd33d814895402cf` | `aee22b9851608606` |
+| `sitekit.pagebundle.nomi` | `c14ced8cd6d72b63` | `252f281fd8de6299` |
 | `sitekit.privacy` | `3e5f924d5f5befb1` | `af823c1378e492d4` |
 | `sitekit.robots` | `cf7d1fd7a07641b3` | `50eb4436aa177c05` |
 | `sitekit.router` | `6800513c8678a343` | `233c645b8dfdd3df` |
-| `sitekit.router.router` | `5ebdef0c88fad933` | `ec017fb40f6889e0` |
+| `sitekit.router.router` | `87c4c604f79efe70` | `3ae9dc97904713e3` |
 | `sitekit.rssreader` | `20a734ed3ebb18c9` | `d45dc361af653458` |
 | `sitekit.rssreader.memos` | `92e3f95d9be5198b` | `d1ee4150e4915f99` |
 | `sitekit.rssreader.wordpress` | `502127c44ce28ed4` | `38c0367a69247d49` |
-| `sitekit.settings` | `9b4ff52367ed1de0` | `9047e9a0df18dc6c` |
+| `sitekit.settings` | `9b4ff52367ed1de0` | `f5b07ff3c6158017` |
 | `sitekit.shortcodes` | `06cd0408d47dd823` | `9a19f0e32b965672` |
 | `sitekit.shortcodes.attributi` | `65543927f106a695` | `f9c5a46620670eae` |
-| `sitekit.shortcodes.filtri` | `ccb410b83b80dec2` | `e4d7a0a91c569451` |
-| `sitekit.shortcodes.processore` | `9e166bd4274475f5` | `2ad2c992e10f3e25` |
+| `sitekit.shortcodes.filtri` | `42b86ed821e4f5ec` | `dc606b89e6332d87` |
+| `sitekit.shortcodes.processore` | `9e166bd4274475f5` | `fdbef6ee32cc3b61` |
 | `sitekit.shortcodes.scoperta` | `bfbdc276f62ab315` | `cc9483893757eb57` |
 | `sitekit.shortcuts` | `fd445c07308830e6` | `33426ee6e70b8a89` |
 | `sitekit.shortcuts.content` | `aa7eaf3e360b17a1` | `1a748770b4f5fb08` |
@@ -72,8 +75,8 @@ Un `api_sha256` invariato con `file_sha256` diverso significa che sono cambiati 
 
 File: `src/sitekit/__init__.py`
 
-- `api_sha256`: `4d772b51fabc049878d5462d4d75f1574c35a445cc8ff3d1f097627508000d95`
-- `file_sha256`: `b33c69bcd76a55b86c5ab22909d4d5384df79eeec6a1504781796ca45deb3a41`
+- `api_sha256`: `1aef9256b064c15c2d37af9e34eb5bd0d9da269fa947e24607dc0e86710c7527`
+- `file_sha256`: `cd3ff431472608ad96aa9d18537bb7d1087b7f60c265f34390ab43b9afa4ff5f`
 
 **Nomi riesposti da questo package**
 
@@ -85,8 +88,157 @@ File: `src/sitekit/__init__.py`
 - `descrizioni (da configurazioni)`
 - `content (da shortcuts)`
 - `i18n (da shortcuts)`
-- `pagina (da )`
+- `assets (da )`
+- `pagebundle (da )`
 - `settings (da settings)`
+
+## `sitekit.assets`
+
+File: `src/sitekit/assets/__init__.py`
+
+- `api_sha256`: `d3ad19ff54239ab2de956d22cc7f189ba4a9ff55af75c8a5d495dd9081984d88`
+- `file_sha256`: `c4d61aca7690d5d6ed6166bd8ed92e75d386cbb7bec52e700fae923dbc9241f2`
+
+Pipeline degli asset: dai sorgenti alla cartella servita.
+
+    resources/           sorgenti DA ELABORARE (immagini da ridimensionare)
+    static/              sorgenti GIÀ PRONTI (css, js, font)
+    content/<bundle>/    immagini dei page bundle, accanto al markdown
+            │
+            │  conversione (images.copy)
+            ▼
+    .cache/assets/       output delle conversioni
+            │
+            │  assets.build()
+            ▼
+    assets/              unica cartella servita in dev e copiata nel build
+
+`resources/` e `static/` sono le uniche cartelle che si modificano a
+mano; `assets/` e `.cache/` sono generate e vanno in .gitignore.
+
+`__all__`: `build`, `cartella_generati`, `destinazione`, `register`, `url`
+
+**Nomi riesposti da questo package**
+
+- `build (da costruzione)`
+- `register (da costruzione)`
+- `cartella_generati (da percorsi)`
+- `destinazione (da percorsi)`
+- `url (da percorsi)`
+
+## `sitekit.assets.costruzione`
+
+File: `src/sitekit/assets/costruzione.py`
+
+- `api_sha256`: `c92240c66cc40a60aef6dd95456cd6cf1d657421fdd841a1668258c1d7bd1681`
+- `file_sha256`: `4cc4c77e6ae477943b38714746c82745fcee975d2142aee173705b791f86dd6c`
+
+**Funzioni**
+
+```python
+def build(pulisci: bool = False) -> int
+```
+
+Unisce le sorgenti degli asset dentro ASSETS_DIR.
+
+Confluiscono, in quest'ordine, gli asset generati in
+CACHE_DIR/assets, i sorgenti da elaborare di RESOURCES_DIR e i
+sorgenti già pronti di STATIC_DIR. La struttura delle cartelle
+viene ricopiata tale e quale: `static/css/style.css` diventa
+`assets/css/style.css`.
+
+La copia è incrementale — un file viene riscritto solo se manca
+o se differisce per dimensione o data — quindi la funzione può
+essere richiamata a ogni avvio dell'applicazione a costo quasi
+nullo.
+
+Args:
+    pulisci: se True rimuove da ASSETS_DIR i file che non
+        provengono più da nessuna sorgente, e le cartelle
+        rimaste vuote.
+
+Returns:
+    Numero di file effettivamente copiati.
+
+```python
+def register(app: object, costruisci: bool = True) -> None
+```
+
+Rende ASSETS_DIR raggiungibile dal server di prova.
+
+Se l'applicazione è già stata costruita puntando lo static
+folder ad ASSETS_DIR non serve nessuna route in più; altrimenti
+ne viene aggiunta una dedicata, così gli asset si vedono anche
+in sviluppo.
+
+Per il freeze conviene comunque costruire l'app così:
+
+    app = Flask(__name__,
+                static_folder=settings.ASSETS_DIR,
+                static_url_path=settings.ASSETS_URL)
+
+perché Frozen-Flask copia da sé lo static folder, mentre una
+route con segnaposto `<path:>` non è scopribile da sola.
+
+Args:
+    app: istanza dell'applicazione Flask.
+    costruisci: se True chiama `build()` subito dopo.
+
+## `sitekit.assets.percorsi`
+
+File: `src/sitekit/assets/percorsi.py`
+
+- `api_sha256`: `37ca1b03ac5ce093228c7aa52e7922fb3982530be180cc836f6e7721a5363000`
+- `file_sha256`: `ecaa704dae38a965c2da1021e960ae5136670d95b187536f8a996506e8a618a4`
+
+**Funzioni**
+
+```python
+def cartella_generati() -> Path
+```
+
+Radice degli asset generati, dentro la cache.
+
+È un mirror parziale di ASSETS_DIR: ci finisce solo ciò che la
+libreria produce (immagini convertite, file copiati dai page
+bundle), così una `assets.build(pulisci=True)` può azzerare la
+cartella finale senza costringere a riconvertire tutto.
+
+Returns:
+    Path di CACHE_DIR / "assets".
+
+```python
+def destinazione(sottopercorso: str | Path = '') -> Path
+```
+
+Percorso su disco in cui scrivere un asset generato.
+
+È quello che si passa come `destination_folder` a
+`images.copy`. La cartella viene creata se non esiste.
+
+Args:
+    sottopercorso: percorso relativo alla radice degli asset,
+        ad esempio "images/chi-siamo".
+
+Returns:
+    Path assoluta dentro CACHE_DIR / "assets".
+
+```python
+def url(sottopercorso: str | Path = '') -> str
+```
+
+URL pubblico corrispondente a un sottopercorso degli asset.
+
+`destinazione()` e `url()` sono le due facce dello stesso
+percorso: usarle in coppia è ciò che impedisce a dove si scrive
+e a cosa si stampa di divergere.
+
+Args:
+    sottopercorso: percorso relativo alla radice degli asset,
+        ad esempio "images/chi-siamo".
+
+Returns:
+    URL assoluto, ad esempio "/assets/images/chi-siamo".
 
 ## `sitekit.cache`
 
@@ -155,8 +307,8 @@ def salva(chiave: str, valore: object) -> bool
 
 File: `src/sitekit/configurazioni/__init__.py`
 
-- `api_sha256`: `2c842c30ae543eab52a5673562b0b2e684048bf85c9d21cfe8cab815049a5e87`
-- `file_sha256`: `75b2391e813574fde4ae97dc11fb8b994f5ca8f89c23d78c59c5a447aadbb877`
+- `api_sha256`: `c7fe2c8f4dc284fa7e38775ece694cc4792f895169ba7b6641dbdc2f31db4001`
+- `file_sha256`: `bdcc259194b43785be5674f5de53642d5f0d7ca0f2f45ea6ea504f8bd3b57a76`
 
 **Nomi riesposti da questo package**
 
@@ -171,6 +323,7 @@ File: `src/sitekit/configurazioni/__init__.py`
 - `jsonld (da sitekit)`
 - `descrizioni (da sitekit.configurazioni)`
 - `images (da sitekit)`
+- `assets (da sitekit.assets)`
 - `settings (da sitekit.settings)`
 
 **Costanti**
@@ -272,7 +425,7 @@ Salva la descrizione del ristorante in un file
 File: `src/sitekit/configurazioni/images.py`
 
 - `api_sha256`: `0297c7887d76b9fe874d6375e7e71230858a41970705e7fa4cc276529d3351cb`
-- `file_sha256`: `19e427ed5f67c4fbbdb8013c85b0db1e28c0b74edb90aa007711b4e3edbca681`
+- `file_sha256`: `9e7780f9a3ffad7e03a534c195a7311bbf22ca66a0b6b2dd85f4d38f803fe43a`
 
 **Funzioni**
 
@@ -336,8 +489,8 @@ def cache_salva() -> None
 
 File: `src/sitekit/images/__init__.py`
 
-- `api_sha256`: `e6fb2b88ff7054441361c4e58d4fa8d085953bb2980c11662a665a5cbf8bd9a5`
-- `file_sha256`: `2d940ca82207681eb4eda941339bf46917fd45e384f3353c88aec8e0a0453cc2`
+- `api_sha256`: `ff059c280cabeb4f2888629a353c7e8051af90bae5d910970e3244fbc13bfc05`
+- `file_sha256`: `5cdc4a1519353747b64f4504cd2adca60218514a0d3a45d988cd529b902934ba`
 
 **Nomi riesposti da questo package**
 
@@ -350,7 +503,7 @@ File: `src/sitekit/images/__init__.py`
 **Funzioni**
 
 ```python
-def copy(source_image: Path, destination_folder: Path, aspect_ratio: str = 'unchanged', anchor: str = 'middle', alt: str = '') -> PictureClass
+def copy(source_image: Path, destination_folder: Path, aspect_ratio: str = 'unchanged', anchor: str = 'middle', alt: str = '', base_url: str | None = None) -> PictureClass
 ```
 
 Copies an image file to a specified destination, creating multiple resized
@@ -366,6 +519,9 @@ Parameters:
     anchor (str): The vertical anchor position for cropping the image.
     alt (str): Testo alternativo per il tag <img>. Importante per
         accessibilità e SEO. Default stringa vuota.
+    base_url (str | None): URL pubblico della cartella di destinazione,
+        di norma ottenuto da `assets.url(...)`. Se non viene passato,
+        PictureClass deduce l'URL dal percorso su disco.
 
 Returns:
     PictureClass: An instance of PictureClass representing the folder
@@ -476,16 +632,27 @@ def salva() -> None
 
 File: `src/sitekit/images/picture_class.py`
 
-- `api_sha256`: `076214e38a08fa7620cb9e76f058a21f8565257452164ef584bf583482d8bbc0`
-- `file_sha256`: `3b82475afb5250073dbf6b4679c279b5f5f85f2e4aab7efc69efb00844f561e4`
+- `api_sha256`: `4b843e3658dd066c8639b6469abf7a517f90cca9a6f8714026e05d202786e3d3`
+- `file_sha256`: `5805d29f409e8e41777a2f66776f081b0b9694a3537ef841db3b71b7e17ba4ef`
 
 ### `class PictureClass`
 
 **Metodi**
 
 ```python
-def __init__(self, folder: Path, alt: str = '')
+def __init__(self, folder: Path, alt: str = '', base_url: str | None = None)
 ```
+
+Args:
+    folder: cartella su disco che contiene i breakpoint
+        generati, il cui nome è lo stem dell'immagine
+        sorgente.
+    alt: testo alternativo per il tag <img>.
+    base_url: URL pubblico della cartella. Va passato da chi
+        conosce la pipeline degli asset (di norma
+        `assets.url(...)`); se manca, l'URL viene dedotto dal
+        percorso su disco, che funziona solo finché i file
+        stanno sotto una cartella chiamata "static".
 
 ## `sitekit.jsonld`
 
@@ -815,54 +982,23 @@ def to_string(self, separator: str = ' - ')
 
 File: `src/sitekit/pagebundle/__init__.py`
 
-- `api_sha256`: `029798132582c24da5691efdbe0449102933bca370c4791f4b8f1014f1e4c157`
-- `file_sha256`: `076f3955f1aebaec6c014708ac0d5edb017c55534cfe2a9b0d68445e1d573f74`
+- `api_sha256`: `99ac4ba347e5dc2ae4953763235fca6bfb16d58b2926d700aba735052c8ca901`
+- `file_sha256`: `6ae67749faebfe23a134c3a6f4fc348b6f81ede3a196f02a890e02d9473ecabf`
 
 **Nomi riesposti da questo package**
 
-- `Path (da pathlib)`
 - `datetime (da datetime)`
-- `cache (da sitekit)`
-- `images (da sitekit)`
-- `settings (da sitekit.settings)`
-
-**Costanti**
-
-- `MEDIA_DESTINATION_FOLDER` = `settings.STATIC_DIR / 'cache'`
-
-**Funzioni**
-
-```python
-def set_media_destination_folder(path: Path)
-```
-
-```python
-def load_collection(path: Path)
-```
-
-```python
-def load_single(path: Path)
-```
-
-## `sitekit.pagina`
-
-File: `src/sitekit/pagina/__init__.py`
-
-- `api_sha256`: `7c57f06c8d90ceaa9884e5c08caec43cba32b59c2c95a648968c20b4821775a9`
-- `file_sha256`: `3f1c532ffc6ab1d73451342f6447d5006595bb32e2e2c370ceac4594637212d2`
-
-**Nomi riesposti da questo package**
-
 - `Path (da pathlib)`
 - `settings (da sitekit.settings)`
+- `media (da )`
 
 **Funzioni**
 
 ```python
-def load(percorso: str | Path) -> dict
+def load(percorso: str | Path, copia_asset: bool = True) -> dict
 ```
 
-Carica una pagina composta da uno o più file frontmatter+markdown.
+Carica un page bundle, cioè una pagina e i suoi asset.
 
 Una pagina può stare tutta in un file solo oppure essere spezzata
 su più file secondo la convenzione
@@ -882,20 +1018,44 @@ Le sottocartelle con nome di 2 caratteri sono cartelle-lingua ed
 equivalgono al suffisso lingua sul nome file: `en/index.intro.md`
 vale quanto `index.intro.en.md`.
 
+Gli asset della cartella vengono convertiti e copiati sotto
+`assets/`, e i riferimenti relativi nel markdown vengono
+riscritti di conseguenza.
+
 Args:
     percorso: cartella del page bundle, oppure percorso esplicito
         del file indice.
+    copia_asset: se False non tocca il disco e non riscrive i
+        riferimenti. Utile quando servono solo i dati.
 
 Returns:
     Dict con il frontmatter di tutti i file fusi insieme, più
     "slug" (nome del bundle), "content"/"content_raw" a ogni
-    livello che ha del testo, e "localization" con le lingue
-    diverse da settings.DEFAULT_LANGUAGE.
+    livello che ha del testo, "localization" con le lingue
+    diverse da settings.DEFAULT_LANGUAGE, e — se presenti —
+    "date" e "cover".
 
 Raises:
     FileNotFoundError: se il percorso non esiste o la cartella non
         contiene né index.md né _index.md.
     ValueError: se un nome di file non segue la convenzione.
+
+```python
+def load_collection(path: Path) -> list[dict]
+```
+
+Carica tutti i page bundle di una cartella, ordinati per data.
+
+Serve per blog e news, dove ogni sottocartella è un post. Le
+pagine senza `date` nel frontmatter la ricavano dalla data di
+creazione della cartella, così l'ordinamento è sempre possibile.
+
+Args:
+    path: cartella che contiene i page bundle.
+
+Returns:
+    Lista di dizionari come quelli di `load`, dal più vecchio al
+    più recente.
 
 ```python
 def localizzato(dati: dict, lingua: str) -> dict
@@ -914,11 +1074,69 @@ Args:
 Returns:
     Un nuovo dizionario senza la chiave "localization".
 
-## `sitekit.pagina.nomi`
+## `sitekit.pagebundle.media`
 
-File: `src/sitekit/pagina/nomi.py`
+File: `src/sitekit/pagebundle/media.py`
 
-- `api_sha256`: `d4e477999c3ee5cbee066981e09067df0105641b61587c5e0ed82c8043a4a727`
+- `api_sha256`: `cd33d814895402cf573ceda3f6a1abc7bde6925a260725204939a881b8721d31`
+- `file_sha256`: `aee22b98516086064c22e77e56f847440fa48bc636fe7ccfe073af426d989f9b`
+
+**Costanti**
+
+- `TIPI_IMMAGINE` = `('.jpg', '.jpeg', '.png')`
+- `TIPI_IGNORATI` = `('.md', '.markdown', '.yaml', '.yml', '.json')`
+
+**Funzioni**
+
+```python
+def destinazione(slug: str) -> Path
+```
+
+Cartella su disco in cui finiscono gli asset del bundle.
+
+Args:
+    slug: nome del page bundle.
+
+Returns:
+    Path dentro CACHE_DIR/assets, creata se non esiste.
+
+```python
+def url(slug: str) -> str
+```
+
+URL pubblico degli asset del bundle.
+
+Args:
+    slug: nome del page bundle.
+
+Returns:
+    Ad esempio "/assets/images/primo-post".
+
+```python
+def copia(cartella: Path, slug: str) -> str | None
+```
+
+Converte e copia gli asset di un page bundle.
+
+Le immagini passano per `images.copy`, che genera i quattro
+breakpoint in AVIF, WebP e JPEG dentro una sottocartella con lo
+stem del file. I file di contenuto vengono ignorati, tutto il
+resto viene copiato tal quale.
+
+Args:
+    cartella: root del page bundle.
+    slug: nome del page bundle, che dà il nome alla cartella di
+        destinazione.
+
+Returns:
+    Lo stem del primo file immagine che contiene "_cover" nel
+    nome, oppure None se non ce n'è nessuno.
+
+## `sitekit.pagebundle.nomi`
+
+File: `src/sitekit/pagebundle/nomi.py`
+
+- `api_sha256`: `c14ced8cd6d72b634f9e700b78997b2a1b156da58e385f43dffe377251b85ee9`
 - `file_sha256`: `252f281fd8de6299d4aeb8795b954d566b24ffe06edc75831c019ac29117b6f3`
 
 **Costanti**
@@ -989,8 +1207,8 @@ File: `src/sitekit/router/__init__.py`
 
 File: `src/sitekit/router/router.py`
 
-- `api_sha256`: `5ebdef0c88fad933dc17f3be860d0c731b301d3ff90cc8efc67251ff8fe28acb`
-- `file_sha256`: `ec017fb40f6889e0d9ef5af1256f8e28d4ac1b074ce8e0d22dd3718aeeedc549`
+- `api_sha256`: `87c4c604f79efe709e67f2fdd2b2b902b9b2eff230f829d9b4a40086b41c105d`
+- `file_sha256`: `3ae9dc97904713e30e13281289d7f16c5860d25550d4306d63d7b8e34782ba57`
 
 ### `class Router`
 
@@ -1091,7 +1309,7 @@ Esempi:
     CONTENT_DIR/index.en.md            → /en/
 
 Il suffisso è un codice lingua solo se lungo esattamente 2
-caratteri: i file di sezione di sitekit.pagina, come
+caratteri: i file di sezione di sitekit.pagebundle, come
 index.intro.md, non sono pagine e sollevano ValueError.
 
 Args:
@@ -1197,7 +1415,7 @@ media:thumbnail, negli enclosures, oppure come prima <img> nel body.
 File: `src/sitekit/settings.py`
 
 - `api_sha256`: `9b4ff52367ed1de06c0fb81aaae97e0f62b36bd4c79c49c28539fcfef5f3f511`
-- `file_sha256`: `9047e9a0df18dc6cc2989a28c23d55cbb20af94cbc12fa7cda45bf94f1e7b509`
+- `file_sha256`: `f5b07ff3c615801794d8f6724976162be1f12c1eccabfec151ec17e89bbd6d1f`
 
 ### `class SettingsClass`
 
@@ -1271,35 +1489,35 @@ Returns:
 
 File: `src/sitekit/shortcodes/filtri.py`
 
-- `api_sha256`: `ccb410b83b80dec205f8ee3369357f2df288f35d8bb8d341f924873cabc786dd`
-- `file_sha256`: `e4d7a0a91c569451dd092646cdfdecfb040d50799dff4231116b279f23a92ad5`
+- `api_sha256`: `42b86ed821e4f5ecc057a083db42aad477a4547b29fd5c8c3a2110f2f031fcd7`
+- `file_sha256`: `dc606b89e6332d8749f9bf779ee919400b6ed01df3524a45361c7498caee001e`
 
 **Funzioni**
 
 ```python
-def static(percorso: str) -> str
+def asset(percorso: str) -> str
 ```
 
-Risolve un percorso relativo rispetto alla cartella static.
+Risolve un percorso relativo rispetto alla cartella assets.
 
-Vale per qualsiasi asset servito da static (immagini, audio,
-video, css, javascript). Gli URL assoluti (http, https o
+Vale per qualsiasi risorsa servita da assets (immagini, audio,
+video, css, javascript, font). Gli URL assoluti (http, https o
 protocol-relative) vengono restituiti invariati.
 
 Args:
-    percorso: percorso dell'asset relativo a static, ad
-        esempio "/images/immagine/immagine__800.jpg".
+    percorso: percorso della risorsa relativo alla radice degli
+        asset, ad esempio "images/immagine/immagine__800.jpg".
 
 Returns:
-    URL completo con il prefisso STATIC_CONTENT, ad esempio
-    "/static/images/immagine/immagine__800.jpg".
+    URL completo con il prefisso ASSETS_URL, ad esempio
+    "/assets/images/immagine/immagine__800.jpg".
 
 ## `sitekit.shortcodes.processore`
 
 File: `src/sitekit/shortcodes/processore.py`
 
 - `api_sha256`: `9e166bd4274475f529a9e91dc6c42bc24e1200eaff1c4dd7c4c8d9323280becb`
-- `file_sha256`: `2ad2c992e10f3e2525919b45e6ac3b3d47acaf7f6ca35f55c84b570898a77b6b`
+- `file_sha256`: `fdbef6ee32cc3b61ed46e7b0f0fefac7e716b65a42f407fe965f63f3eedc2255`
 
 ### `class ProcessoreShortcode`
 
@@ -1445,8 +1663,23 @@ def generate()
   "modules": {
     "sitekit": {
       "path": "src/sitekit/__init__.py",
-      "file_sha256": "b33c69bcd76a55b86c5ab22909d4d5384df79eeec6a1504781796ca45deb3a41",
-      "api_sha256": "4d772b51fabc049878d5462d4d75f1574c35a445cc8ff3d1f097627508000d95"
+      "file_sha256": "cd3ff431472608ad96aa9d18537bb7d1087b7f60c265f34390ab43b9afa4ff5f",
+      "api_sha256": "1aef9256b064c15c2d37af9e34eb5bd0d9da269fa947e24607dc0e86710c7527"
+    },
+    "sitekit.assets": {
+      "path": "src/sitekit/assets/__init__.py",
+      "file_sha256": "c4d61aca7690d5d6ed6166bd8ed92e75d386cbb7bec52e700fae923dbc9241f2",
+      "api_sha256": "d3ad19ff54239ab2de956d22cc7f189ba4a9ff55af75c8a5d495dd9081984d88"
+    },
+    "sitekit.assets.costruzione": {
+      "path": "src/sitekit/assets/costruzione.py",
+      "file_sha256": "4cc4c77e6ae477943b38714746c82745fcee975d2142aee173705b791f86dd6c",
+      "api_sha256": "c92240c66cc40a60aef6dd95456cd6cf1d657421fdd841a1668258c1d7bd1681"
+    },
+    "sitekit.assets.percorsi": {
+      "path": "src/sitekit/assets/percorsi.py",
+      "file_sha256": "ecaa704dae38a965c2da1021e960ae5136670d95b187536f8a996506e8a618a4",
+      "api_sha256": "37ca1b03ac5ce093228c7aa52e7922fb3982530be180cc836f6e7721a5363000"
     },
     "sitekit.cache": {
       "path": "src/sitekit/cache/__init__.py",
@@ -1460,8 +1693,8 @@ def generate()
     },
     "sitekit.configurazioni": {
       "path": "src/sitekit/configurazioni/__init__.py",
-      "file_sha256": "75b2391e813574fde4ae97dc11fb8b994f5ca8f89c23d78c59c5a447aadbb877",
-      "api_sha256": "2c842c30ae543eab52a5673562b0b2e684048bf85c9d21cfe8cab815049a5e87"
+      "file_sha256": "bdcc259194b43785be5674f5de53642d5f0d7ca0f2f45ea6ea504f8bd3b57a76",
+      "api_sha256": "c7fe2c8f4dc284fa7e38775ece694cc4792f895169ba7b6641dbdc2f31db4001"
     },
     "sitekit.configurazioni.descrizioni": {
       "path": "src/sitekit/configurazioni/descrizioni/__init__.py",
@@ -1470,7 +1703,7 @@ def generate()
     },
     "sitekit.configurazioni.images": {
       "path": "src/sitekit/configurazioni/images.py",
-      "file_sha256": "19e427ed5f67c4fbbdb8013c85b0db1e28c0b74edb90aa007711b4e3edbca681",
+      "file_sha256": "9e7780f9a3ffad7e03a534c195a7311bbf22ca66a0b6b2dd85f4d38f803fe43a",
       "api_sha256": "0297c7887d76b9fe874d6375e7e71230858a41970705e7fa4cc276529d3351cb"
     },
     "sitekit.configurazioni.imgcache": {
@@ -1480,8 +1713,8 @@ def generate()
     },
     "sitekit.images": {
       "path": "src/sitekit/images/__init__.py",
-      "file_sha256": "2d940ca82207681eb4eda941339bf46917fd45e384f3353c88aec8e0a0453cc2",
-      "api_sha256": "e6fb2b88ff7054441361c4e58d4fa8d085953bb2980c11662a665a5cbf8bd9a5"
+      "file_sha256": "5cdc4a1519353747b64f4504cd2adca60218514a0d3a45d988cd529b902934ba",
+      "api_sha256": "ff059c280cabeb4f2888629a353c7e8051af90bae5d910970e3244fbc13bfc05"
     },
     "sitekit.images.images": {
       "path": "src/sitekit/images/images.py",
@@ -1495,8 +1728,8 @@ def generate()
     },
     "sitekit.images.picture_class": {
       "path": "src/sitekit/images/picture_class.py",
-      "file_sha256": "3b82475afb5250073dbf6b4679c279b5f5f85f2e4aab7efc69efb00844f561e4",
-      "api_sha256": "076214e38a08fa7620cb9e76f058a21f8565257452164ef584bf583482d8bbc0"
+      "file_sha256": "5805d29f409e8e41777a2f66776f081b0b9694a3537ef841db3b71b7e17ba4ef",
+      "api_sha256": "4b843e3658dd066c8639b6469abf7a517f90cca9a6f8714026e05d202786e3d3"
     },
     "sitekit.jsonld": {
       "path": "src/sitekit/jsonld/__init__.py",
@@ -1560,18 +1793,18 @@ def generate()
     },
     "sitekit.pagebundle": {
       "path": "src/sitekit/pagebundle/__init__.py",
-      "file_sha256": "076f3955f1aebaec6c014708ac0d5edb017c55534cfe2a9b0d68445e1d573f74",
-      "api_sha256": "029798132582c24da5691efdbe0449102933bca370c4791f4b8f1014f1e4c157"
+      "file_sha256": "6ae67749faebfe23a134c3a6f4fc348b6f81ede3a196f02a890e02d9473ecabf",
+      "api_sha256": "99ac4ba347e5dc2ae4953763235fca6bfb16d58b2926d700aba735052c8ca901"
     },
-    "sitekit.pagina": {
-      "path": "src/sitekit/pagina/__init__.py",
-      "file_sha256": "3f1c532ffc6ab1d73451342f6447d5006595bb32e2e2c370ceac4594637212d2",
-      "api_sha256": "7c57f06c8d90ceaa9884e5c08caec43cba32b59c2c95a648968c20b4821775a9"
+    "sitekit.pagebundle.media": {
+      "path": "src/sitekit/pagebundle/media.py",
+      "file_sha256": "aee22b98516086064c22e77e56f847440fa48bc636fe7ccfe073af426d989f9b",
+      "api_sha256": "cd33d814895402cf573ceda3f6a1abc7bde6925a260725204939a881b8721d31"
     },
-    "sitekit.pagina.nomi": {
-      "path": "src/sitekit/pagina/nomi.py",
+    "sitekit.pagebundle.nomi": {
+      "path": "src/sitekit/pagebundle/nomi.py",
       "file_sha256": "252f281fd8de6299d4aeb8795b954d566b24ffe06edc75831c019ac29117b6f3",
-      "api_sha256": "d4e477999c3ee5cbee066981e09067df0105641b61587c5e0ed82c8043a4a727"
+      "api_sha256": "c14ced8cd6d72b634f9e700b78997b2a1b156da58e385f43dffe377251b85ee9"
     },
     "sitekit.privacy": {
       "path": "src/sitekit/privacy/__init__.py",
@@ -1590,8 +1823,8 @@ def generate()
     },
     "sitekit.router.router": {
       "path": "src/sitekit/router/router.py",
-      "file_sha256": "ec017fb40f6889e0d9ef5af1256f8e28d4ac1b074ce8e0d22dd3718aeeedc549",
-      "api_sha256": "5ebdef0c88fad933dc17f3be860d0c731b301d3ff90cc8efc67251ff8fe28acb"
+      "file_sha256": "3ae9dc97904713e30e13281289d7f16c5860d25550d4306d63d7b8e34782ba57",
+      "api_sha256": "87c4c604f79efe709e67f2fdd2b2b902b9b2eff230f829d9b4a40086b41c105d"
     },
     "sitekit.rssreader": {
       "path": "src/sitekit/rssreader/__init__.py",
@@ -1610,7 +1843,7 @@ def generate()
     },
     "sitekit.settings": {
       "path": "src/sitekit/settings.py",
-      "file_sha256": "9047e9a0df18dc6cc2989a28c23d55cbb20af94cbc12fa7cda45bf94f1e7b509",
+      "file_sha256": "f5b07ff3c615801794d8f6724976162be1f12c1eccabfec151ec17e89bbd6d1f",
       "api_sha256": "9b4ff52367ed1de06c0fb81aaae97e0f62b36bd4c79c49c28539fcfef5f3f511"
     },
     "sitekit.shortcodes": {
@@ -1625,12 +1858,12 @@ def generate()
     },
     "sitekit.shortcodes.filtri": {
       "path": "src/sitekit/shortcodes/filtri.py",
-      "file_sha256": "e4d7a0a91c569451dd092646cdfdecfb040d50799dff4231116b279f23a92ad5",
-      "api_sha256": "ccb410b83b80dec205f8ee3369357f2df288f35d8bb8d341f924873cabc786dd"
+      "file_sha256": "dc606b89e6332d8749f9bf779ee919400b6ed01df3524a45361c7498caee001e",
+      "api_sha256": "42b86ed821e4f5ecc057a083db42aad477a4547b29fd5c8c3a2110f2f031fcd7"
     },
     "sitekit.shortcodes.processore": {
       "path": "src/sitekit/shortcodes/processore.py",
-      "file_sha256": "2ad2c992e10f3e2525919b45e6ac3b3d47acaf7f6ca35f55c84b570898a77b6b",
+      "file_sha256": "fdbef6ee32cc3b61ed46e7b0f0fefac7e716b65a42f407fe965f63f3eedc2255",
       "api_sha256": "9e166bd4274475f529a9e91dc6c42bc24e1200eaff1c4dd7c4c8d9323280becb"
     },
     "sitekit.shortcodes.scoperta": {
@@ -1664,4 +1897,4 @@ def generate()
 
 ## Metadata
 - Ultima modifica: 2026-08-05
-- Modello: Claude Opus 5
+- Modello: claude-opus-5
