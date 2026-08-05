@@ -56,6 +56,8 @@ class SettingsClass:
         self.TEMPLATES_DIR = self.BASE_DIR / "templates"
         self.PLUGINS_DIR = self.TEMPLATES_DIR / "plugins"
         self.SITE_LANGUAGES = self._carica_lingue_disponibili()
+        self.DEFAULT_LANGUAGE = "it"
+        self.BUNDLE_ASSETS_URL = "cache/{slug}"
         self.VERBOSE = False
 
 settings = SettingsClass()

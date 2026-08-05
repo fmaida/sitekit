@@ -40,7 +40,7 @@ def set_base_url(base_url: str) -> None:
 
 
 def always_force_a_title(force_a_title: bool) -> None:
-    CONFIG.force_a_title = True
+    CONFIG.force_a_title = force_a_title
 
 
 def wrap_titles_at(wrap_titles_at: int) -> None:
@@ -151,8 +151,8 @@ if __name__ == "__main__":
     set_token(token)
     #set_base_url("https://memos.cesco.it")
     set_base_url("https://cesco.blog")
-    set_force_a_title(True)
-    set_wrap_titles_at(30)
+    always_force_a_title(True)
+    wrap_titles_at(30)
     dati = get()
     test(dati)
     print()

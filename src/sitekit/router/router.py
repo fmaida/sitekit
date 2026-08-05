@@ -183,6 +183,10 @@ class Router:
             CONTENT_DIR/index.md               → /
             CONTENT_DIR/index.en.md            → /en/
 
+        Il suffisso è un codice lingua solo se lungo esattamente 2
+        caratteri: i file di sezione di sitekit.pagina, come
+        index.intro.md, non sono pagine e sollevano ValueError.
+
         Args:
             percorso (Path): Percorso del file di contenuto.
 
@@ -215,6 +219,7 @@ class Router:
                 len(parti_nome) != 3
                 or parti_nome[0] not in ("index", "_index")
                 or parti_nome[2] != "md"
+                or len(parti_nome[1]) != 2
             ):
                 raise ValueError(
                     f"Il file non segue la convenzione index.md, "

@@ -190,10 +190,9 @@ def prune(days: int = 60) -> None:
     """
     Cancella tutti i file in CACHE_DIR più vecchi di N giorni.
 
-    Va chiamata una volta a ogni avvio dell'applicazione per
-    tenere la cartella di cache sotto controllo. Viene già
-    invocata automaticamente all'importazione del modulo con
-    il valore di default (60 giorni).
+    Va chiamata esplicitamente una volta a ogni avvio
+    dell'applicazione per tenere la cartella di cache sotto
+    controllo: l'importazione del modulo non la invoca.
 
     Args:
         days: Numero di giorni oltre i quali un file viene
